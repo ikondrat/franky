@@ -25,6 +25,10 @@
 
             return this;
         },
+        // alias
+        each: function () {
+            return this.forEach.apply(this, arguments);
+        },
 
         "map": function (callback) {
             var smth = this.smth;
