@@ -2,7 +2,10 @@
     "name": "franky",
     "description": "JavaScript's functional programming helper library.",
     "keywords": ["util", "functional", "server", "client", "browser"],
-    "author": "Kondrat Shmoylov <remhag@gmail.com>",
+    "author": {
+        "name": "Kondrat Shmoylov",
+        "email": "remhag@gmail.com"
+    },
     "repository": {
         "type": "git",
         "url": "git://github.com/ikondrat/franky.git"
