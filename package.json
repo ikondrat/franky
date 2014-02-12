@@ -1,0 +1,27 @@
+{
+    "name": "franky",
+    "description": "JavaScript's functional programming helper library.",
+    "keywords": ["util", "functional", "server", "client", "browser"],
+    "author": "Kondrat Shmoylov <remhag@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/ikondrat/franky.git"
+    },
+    "main": "franky.js",
+    "version": "1.0.0",
+    "devDependencies": {
+        "docco": "0.6.x",
+        "phantomjs": "1.9.0-1",
+        "uglify-js": "2.4.x"
+    },
+    "scripts": {
+        "test": "phantomjs test/vendor/runner.js test/index.html?noglobals=true",
+        "build": "uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js",
+        "doc": "docco franky.js"
+    },
+    "licenses": [{
+        "type": "MIT",
+        "url": "https://raw.github.com/ikondrat/franky/master/LICENSE"
+    }],
+    "files": ["franky.js", "franky-min.js", "LICENSE"]
+}
