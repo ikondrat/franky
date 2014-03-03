@@ -339,9 +339,4 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return x.beget(obj);
     };
 
-    if (isDebug) {
-        ns.Interface.ensureImplements(ns.views, ns.ViewItem);
-    }
-
-
 }(xglobal, "x"));
