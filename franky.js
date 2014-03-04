@@ -330,7 +330,6 @@ var xglobal = typeof global !== "undefined" ? global : this;
     };
 
     ns.views = new ns.View();
-
     ns.getObject = function (obj) {
         obj.beget = function (values) {
             return x.beget(this, values);
