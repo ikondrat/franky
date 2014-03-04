@@ -1,4 +1,4 @@
-[![][travis img]][travis]
+[![Build Status](https://travis-ci.org/ikondrat/franky.png?branch=master)](https://travis-ci.org/ikondrat/franky)
 
 Franky
 ======
