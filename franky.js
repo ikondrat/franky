@@ -19,6 +19,8 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return this;
     };
 
+    ns.getEmptyString = function () {return "";};
+
     /**
      * Formats string with pattern as first argument and values as other ones.
      * E.g.: ns.stringf("%s %s", "hello", "world") -> "hello world"
