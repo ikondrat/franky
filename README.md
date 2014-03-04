@@ -1,4 +1,12 @@
-franky
+[![][travis img]][travis]
+
+Franky
 ======
 
-Franky - JavaScript framework for everyday using
+JavaScript framework for everyday usage
+
+Licensing
+=========
+
+This software is licensed under the terms in the file named "LICENSE" in this
+directory.
