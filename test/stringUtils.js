@@ -3,8 +3,6 @@
 (function() {
     "use strict";
 
-    module('Strings');
-
     test('trim', function() {
         equal(
             x.trim(" a  a "),

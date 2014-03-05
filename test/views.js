@@ -3,8 +3,6 @@
 (function() {
     "use strict";
 
-    module('Views');
-
     x.views.parseRules.test = function (key) {
         return function (d) {
             return key + d.x;
