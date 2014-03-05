@@ -64,45 +64,6 @@
 
     });
 
-    test('beget', function() {
-
-        var baseObject = {
-                variable: 1,
-                str: "hello",
-                obj: {
-                    "test": 1
-                }
-            },
-            customObject = x.getObject(baseObject),
-            begetObject = customObject.beget({
-                "ololo": 1
-            }),
-            begetObjectX = begetObject.beget({
-                "ololo": 2
-            });
-
-        ok( customObject.variable === 1 &&
-            customObject.str === "hello" &&
-            customObject.obj.test === 1,
-            "Object's variables should be available for access");
-
-        ok(
-            !customObject.hasOwnProperty("variable"),
-            "Should be acceses as prototypes"
-        );
-
-        equal(
-            begetObjectX.ololo,
-            2,
-            "ololo should be property of object"
-        );
-        equal(
-            begetObject.ololo,
-            1,
-            "ololo should be property of object"
-        );
-    });
-
 
     test('view rule', function() {
         

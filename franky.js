@@ -115,7 +115,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
         if (Object.create) {
 
             x.each(valuesForNewObject, function (value, key) {
-                obj[key]= {writable:true, "value": value};
+                obj[key]= {writable:true, enumerable: true, "value": value};
             });
 
             return Object.create(baseObj, obj);
