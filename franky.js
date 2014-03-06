@@ -340,4 +340,14 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return x.beget(obj);
     };
 
+    ns.URLre = /^https?:\/\/\S+/i;
+
+    ns.isURL = function (str) {
+        if (typeof str !== "string") {
+            throw new Error("isURL expects string parameter instead " + typeof str);
+        }
+
+        return ns.URLre.test(str);
+    };
+
 }(xglobal, "x"));
