@@ -41,57 +41,58 @@ var xglobal = typeof global !== "undefined" ? global : this;
      * @return {String} random number
      */
     ns.generateId = function () {
-        return String(Math.random()).substr(2, 12);
+        return String(Math.random()).substr(2);
     };
 
     ns.map = function (arr, callback) {
         if (arr instanceof Array && callback instanceof Function) {
-
             return arr.map(callback);
-
         }
     };
 
-    /**
-     * Iterates object or array with callback
-     * @param  {Object}            array or object for iterate
-     * @param  {Function}          callback fired on each item
-     * @return {Object}            context object
-     */
-    ns.forEach = function (smth, callback) {
-        if (smth instanceof Array) {
-            for (var i = 0, l = smth.length; i < l; i++) {
-                callback(smth[i], i, smth);
-            }
-        } else {
-            for (var item in smth) {
-                if (smth.hasOwnProperty(item)) {
-                    callback(smth[item], item, smth);
-                }
+    ns.eachListItem = function (arr, callback) {
+        for (var i = 0, l = arr.length; i < l; i++) {
+            callback(arr[i], i, arr);
+        }
+        return this;
+    };
+
+    ns.eachProperty = function (obj, callback) {
+        for (var item in obj) {
+            if (obj.hasOwnProperty(item)) {
+                callback(obj[item], item, obj);
             }
         }
-
         return this;
     };
 
     ns.trimRe = (new RegExp()).compile(/^\s+|\s+$/g);
     ns.trim = function (str) {
-        str = str || null;
-        if (str) {
-            return str.trim instanceof Function ?
-                str.trim() :
-                str.replace(ns.trimRe, "");
+        var paramsType = typeof str;
+        if (paramsType !== "string") {
+            throw new Error("Argument must be string but" + paramsType + " passed");
         }
-        
+        return str.trim instanceof Function ?
+            str.trim() :
+            str.replace(ns.trimRe, "");
     };
 
     x.stripSpaces = function (str) {
         return str.split(" ").join("");
     };
 
-    // alias
-    ns.each =  function () {
-        return this.forEach.apply(this, arguments);
+    /**
+     * Iterates object or array with callback
+     * @param  {Object}            array or object for iterate
+     * @param  {Function}          callback fired on each item
+     * @returns {Object}           context object
+     */
+    ns.each = ns.forEach = function (smth, callback) {
+        var targetFunction = (smth instanceof Array) ?
+            ns.eachListItem : ns.eachProperty;
+
+        targetFunction(smth, callback);
+        return this;
     };
 
     ns.isFunc = function() {
@@ -109,18 +110,26 @@ var xglobal = typeof global !== "undefined" ? global : this;
         };
     };
 
-    ns.beget = function (baseObj, valuesForNewObject) {
-        var obj = {};
+    ns.beget = function (baseObj, newObjectProperties) {
+        var obj = {},
+            typeBase = typeof baseObj,
+            typeProperties = typeof newObjectProperties;
 
-        if (Object.create) {
-
-            x.each(valuesForNewObject, function (value, key) {
-                obj[key]= {writable:true, enumerable: true, "value": value};
-            });
-
-            return Object.create(baseObj, obj);
+        if (typeBase !== "object") {
+            throw new Error("Only object allowed to be prototype and tried to work with " + typeBase);
+        }
+        if (typeProperties !== "undefined" && typeProperties !== "object") {
+            throw new Error("Only object allowed to be list of properties instead " + typeProperties);
+        }
+        if (typeof Object.create !== "function") {
+            throw new Error("Object.create function is required");
         }
 
+        x.each(newObjectProperties, function (value, key) {
+            obj[key]= {writable:true, enumerable: true, "value": value};
+        });
+
+        return Object.create(baseObj, obj);
     };
 
     ns.console = {
@@ -212,8 +221,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         var F = function () {};
         F.prototype = obj;
-        var res = new F();
-        return res;
+        return new F();
     };
 
     if (isDebug) {
@@ -257,11 +265,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
             jpath: function(key) {
                 return function (d) {
-                    var res = "";
-
-                    res = x.getJPathValue(d, key) || "";
-
-                    return res;
+                    return x.getJPathValue(d, key) || "";
                 };
             },
 
@@ -275,7 +279,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
         },
 
         ruleFunction: function (paramName, defaults) {
-            var res = this.getCustomRender(paramName) || function (d) {
+            return this.getCustomRender(paramName) || function (d) {
 
                 var res = d[paramName] || defaults[paramName];
 
@@ -286,8 +290,6 @@ var xglobal = typeof global !== "undefined" ? global : this;
                 }
                 return res || "";
             };
-
-            return res;
         },
 
         "let": function (name, template, defaults) {
@@ -349,5 +351,4 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         return ns.URLre.test(str);
     };
-
 }(xglobal, "x"));
