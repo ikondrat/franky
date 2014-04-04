@@ -154,6 +154,12 @@ var xglobal = typeof global !== "undefined" ? global : this;
         }
     };
 
+    /**
+     * Creates interface description
+     * @param {string} name Name of interface
+     * @param {array} methods List of methods descibed as strings
+     * @constructor
+     */
     ns.Interface = function (name, methods) {
         var self = this;
         if (arguments.length !== 2) {
@@ -175,7 +181,13 @@ var xglobal = typeof global !== "undefined" ? global : this;
         });
     };
 
-    ns.Interface.ensureImplements = function (object) {
+    /**
+     * Checks implementation of interface of interfaces for particular object
+     * @param {object} object    Object for check implementation
+     * @param {array} interfaces    Array of interfaces for check
+     * @returns {boolean}
+     */
+    ns.Interface.ensureImplements = function (object, interfaces) {
 
         if (arguments.length !== 2) {
             throw new Error (
@@ -183,7 +195,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
                 "parameters, but expected at least 2");
         }
 
-        x.each(Array.prototype.slice.call(arguments, 1), function (interfaceItem) {
+        x.each(interfaces, function (interfaceItem) {
             if (interfaceItem.constructor !== ns.Interface) {
                 throw new Error("Function Interface.ensureImplements expects arguments two and above to be instances of Interface.");
             }
@@ -198,11 +210,20 @@ var xglobal = typeof global !== "undefined" ? global : this;
         });
     };
 
+    /**
+     * Extends function by another function
+     * @param {function} subClass   Function for extend
+     * @param {function} superClass Function is used as superClass
+     */
     ns.extend = function (subClass, superClass) {
         var F = function () {};
-        F.prototype = superClass.prototype;
+        subClass.superclass = F.prototype = superClass.prototype;
         subClass.prototype = new F();
-        subClass.prototype.constructor = superClass;
+        subClass.prototype.constructor = subClass;
+
+        if(superClass.prototype.constructor === Object.prototype.constructor) {
+            superClass.prototype.constructor = superClass;
+        }
     };
 
     ns.getJPathValue = function(smth, key) {
