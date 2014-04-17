@@ -45,9 +45,63 @@ var xglobal = typeof global !== "undefined" ? global : this;
     };
 
     ns.map = function (arr, callback) {
-        if (arr instanceof Array && callback instanceof Function) {
+        if (ns.isArray(arr) && callback instanceof Function) {
             return arr.map(callback);
         }
+    };
+
+
+    ns.console = {
+        slog: function (pattern) {
+            this.log( ns.stringf.apply(this, arguments) );
+        },
+
+        log: function () {
+            if (typeof debug !== "undefined") {
+                x(arguments).forEach(function (smth) {
+                    debug(smth);
+                });
+            }
+        },
+
+        error: function (txt) {
+            ns.error(txt);
+        },
+
+        dir: function (smth) {
+            this.log(JSON.stringify(smth));
+        }
+    };
+    ns.error = ns.console.error;
+
+    ns.filter = function (arr, callback) {
+        if (!ns.isArray(arr)) {
+            ns.error(
+                "first argument is expected to be an array instead of " + typeof arr
+            );
+        }
+        if (!ns.isFunc(callback)) {
+            ns.error(
+                "second argument is expected to be a function instead of " + typeof callback
+            );
+        }
+
+        if (!arr.filter) {
+            ns.error(
+                "filter function is not implemented by default"
+            );
+        }
+
+        return arr.filter(callback);
+
+    };
+
+    ns.isArray = function (item) {
+        return (item instanceof Array);
+    };
+
+    ns.isObject = function (item) {
+        return (typeof item === "object");
     };
 
     ns.eachListItem = function (arr, callback) {
@@ -70,7 +124,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     ns.trim = function (str) {
         var paramsType = typeof str;
         if (paramsType !== "string") {
-            throw new Error("Argument must be string but" + paramsType + " passed");
+            ns.error("Argument must be string but" + paramsType + " passed");
         }
         return str.trim instanceof Function ?
             str.trim() :
@@ -88,7 +142,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
      * @returns {Object}           context object
      */
     ns.each = ns.forEach = function (smth, callback) {
-        var targetFunction = (smth instanceof Array) ?
+        var targetFunction = (ns.isArray(smth)) ?
             ns.eachListItem : ns.eachProperty;
 
         targetFunction(smth, callback);
@@ -116,13 +170,13 @@ var xglobal = typeof global !== "undefined" ? global : this;
             typeProperties = typeof newObjectProperties;
 
         if (typeBase !== "object") {
-            throw new Error("Only object allowed to be prototype and tried to work with " + typeBase);
+            ns.error("Only object allowed to be prototype and tried to work with " + typeBase);
         }
         if (typeProperties !== "undefined" && typeProperties !== "object") {
-            throw new Error("Only object allowed to be list of properties instead " + typeProperties);
+            ns.error("Only object allowed to be list of properties instead " + typeProperties);
         }
         if (typeof Object.create !== "function") {
-            throw new Error("Object.create function is required");
+            ns.error("Object.create function is required");
         }
 
         x.each(newObjectProperties, function (value, key) {
@@ -130,28 +184,6 @@ var xglobal = typeof global !== "undefined" ? global : this;
         });
 
         return Object.create(baseObj, obj);
-    };
-
-    ns.console = {
-        slog: function (pattern) {
-            this.log( ns.stringf.apply(this, arguments) );
-        },
-
-        log: function () {
-            if (typeof debug !== "undefined") {
-                x(arguments).forEach(function (smth) {
-                    debug(smth);
-                });
-            }
-        },
-
-        error: function (txt) {
-            throw new Error(txt);
-        },
-
-        dir: function (smth) {
-            this.log(JSON.stringify(smth));
-        }
     };
 
     /**
@@ -163,7 +195,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     ns.Interface = function (name, methods) {
         var self = this;
         if (arguments.length !== 2) {
-            throw new Error (
+            ns.error (
                 "Interface constructor called with "+ arguments.length +
                 "parameters, but expected exactly 2");
         }
@@ -173,7 +205,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         x.each(methods, function (method) {
             if (typeof method !== "string") {
-                throw new Error("Interface constructor expects method "+
+                ns.error("Interface constructor expects method "+
                     "names to be passed in as a string");
             }
 
@@ -190,19 +222,19 @@ var xglobal = typeof global !== "undefined" ? global : this;
     ns.Interface.ensureImplements = function (object, interfaces) {
 
         if (arguments.length !== 2) {
-            throw new Error (
+            ns.error (
                 "Interface constructor called with "+ arguments.length +
                 "parameters, but expected at least 2");
         }
 
         x.each(interfaces, function (interfaceItem) {
             if (interfaceItem.constructor !== ns.Interface) {
-                throw new Error("Function Interface.ensureImplements expects arguments two and above to be instances of Interface.");
+                ns.error("Function Interface.ensureImplements expects arguments two and above to be instances of Interface.");
             }
 
             x.each(interfaceItem.methods, function (method) {
                 if (!object[method] || typeof object[method] !== "function") {
-                    throw new Error("Function Interface.ensureImplements: object "+
+                    ns.error("Function Interface.ensureImplements: object "+
                         "does not implement the " + interfaceItem.name +
                         " interface. Method " + method + " was not found.");
                 }
@@ -248,7 +280,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     if (isDebug) {
         ns.ViewItem = new x.Interface("View", ["getCustomRender", "ruleFunction", "let", "get"]);
     }
-    
+
 
     ns.View = function (view) {
         this.templates = view && view.templates ?
@@ -316,8 +348,8 @@ var xglobal = typeof global !== "undefined" ? global : this;
         "let": function (name, template, defaults) {
 
             var inTemplates = name in this.templates;
-            
-            
+
+
             var result = [],
                 superTmpl = name in this.templates ? this.templates[name] : null,
                 self = this,
@@ -343,7 +375,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
         },
         "get": function (name, data) {
             var template = this.templates[name],
-                res = template instanceof Array ?
+                res = ns.isArray(template) ?
                     x.map(template, function (item) {
                         return typeof item === "string" ?
                             item:
@@ -367,7 +399,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
     ns.isURL = function (str) {
         if (typeof str !== "string") {
-            throw new Error("isURL expects string parameter instead " + typeof str);
+            ns.error("isURL expects string parameter instead " + typeof str);
         }
 
         return ns.URLre.test(str);
