@@ -28,6 +28,7 @@
         );
     });
 
+    /*
     if (typeof document !== "undefined") {
         test('Components: initByHTML', function() {
             x.Component.initByHTML();
@@ -38,6 +39,7 @@
             );
         });
     }
+    */
 
 
 })();
