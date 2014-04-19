@@ -56,23 +56,36 @@ var xglobal = typeof global !== "undefined" ? global : this;
             this.log( ns.stringf.apply(this, arguments) );
         },
 
-        log: function () {
+        log: function (smth) {
             if (typeof debug !== "undefined") {
-                x(arguments).forEach(function (smth) {
-                    debug(smth);
-                });
+                debug(smth);
+            } else if (global.console && global.console.log) {
+                global.console.log(smth);
             }
         },
 
         error: function (txt) {
-            ns.error(txt);
+            throw new Error(txt);
         },
 
         dir: function (smth) {
             this.log(JSON.stringify(smth));
         }
     };
+    ns.log = ns.console.log;
     ns.error = ns.console.error;
+
+    var filterDegradation = function (arr, callback) {
+        var res = [];
+
+        x.each(arr, function (item, i) {
+            if (callback(item, i, this)) {
+                res.push(item);
+            }
+        });
+
+        return res;
+    };
 
     ns.filter = function (arr, callback) {
         if (!ns.isArray(arr)) {
@@ -92,7 +105,8 @@ var xglobal = typeof global !== "undefined" ? global : this;
             );
         }
 
-        return arr.filter(callback);
+        return arr.filter ?
+            arr.filter(callback) : filterDegradation(callback);
 
     };
 
@@ -404,4 +418,104 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         return ns.URLre.test(str);
     };
+
+    var intComponent = new ns.Interface("intComponent",
+        ["init", "data"]
+    );
+
+    ns.ComponentBase = {
+        data: function (name) {
+            var el = this.getNodeElement();
+
+            return el ? ns.data(el, name) : undefined;
+        },
+        getNodeElement: function () {
+            var x1 = ns.$("#" + this.id);
+            return x1[0];
+        },
+        setId: function (id) {
+            this.id = id;
+        }
+    };
+
+    ns.Component = (function () {
+        var components = [],
+            componentsIndex = {},
+            appSelector = "*[data-xapp]";
+        return {
+            extend: function (componentDescription) {
+                var i = components.length,
+                    app = x.beget(ns.ComponentBase, componentDescription);
+
+                ns.Interface.ensureImplements(app, [intComponent]);
+
+                if (!app.id) {
+                    ns.error("extend method expects id field in description object");
+                }
+
+                components.push(app);
+                // fill index
+                componentsIndex[app.id] = i;
+                return components[i];
+            },
+
+            // инициализация по структуре html
+            "initByHTML": function (context) {
+                var contextNode = context || document,
+                    self = this,
+                    apps = ns.$(appSelector, contextNode);
+
+                x.each(apps, function (element) {
+                    var names = ns.data(element, "xapp");
+                    x.each(names.split(" "), function (appName) {
+                        self.initById(appName,
+                            ns.getElementId(element)
+                        );
+                    });
+                });
+            },
+
+            "initById": function (name, elementId) {
+                var app = name in componentsIndex ?
+                        components[componentsIndex[name]] : null;
+
+                if (app) {
+                    if (typeof elementId !== "undefined") {
+                        app.setId(elementId);
+                    }
+                    app.init();
+                }
+            }
+        };
+
+    })();
+
+    ns.$ = function (expr) {
+        var contextNode = arguments[1] || global.document || null;
+
+        return contextNode && ns.isFunc(contextNode.querySelectorAll) ?
+            contextNode.querySelectorAll(expr): [];
+    };
+
+    ns.data = function (node, dataName) {
+        if (!(node instanceof Element)) {
+            ns.error("nodeElement expected as first argument instead of " + typeof node);
+        }
+        return node.getAttribute("data-" + dataName);
+    };
+
+    ns.getElementId = function (node) {
+        if (!(node instanceof Element)) {
+            ns.error("nodeElement expected as first argument instead of " + typeof node);
+        }
+
+        var id = node.getAttribute("id");
+        if (!id) {
+            id = "_" + ns.generateId();
+            node.setAttribute("id", id);
+        }
+
+        return id;
+    };
+
 }(xglobal, "x"));
