@@ -114,6 +114,10 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return (item instanceof Array);
     };
 
+    ns.isNodeList = function (item) {
+        return item instanceof NodeList;
+    };
+
     ns.isObject = function (item) {
         return (typeof item === "object");
     };
@@ -156,7 +160,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
      * @returns {Object}           context object
      */
     ns.each = ns.forEach = function (smth, callback) {
-        var targetFunction = (ns.isArray(smth)) ?
+        var targetFunction = (ns.isArray(smth) || ns.isNodeList(smth)) ?
             ns.eachListItem : ns.eachProperty;
 
         targetFunction(smth, callback);
