@@ -115,7 +115,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     };
 
     ns.isArrayLike = function (item) {
-        return ns.isObject(item) && "length" in item;
+        return (ns.isObject(item) && !ns.isArray(item) && "length" in item);
     };
 
     ns.isObject = function (item) {
