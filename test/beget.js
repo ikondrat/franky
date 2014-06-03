@@ -65,4 +65,28 @@
 
         ok(extended.propertyIsEnumerable('property'), 'extended property must be enumerable');
     });
+
+    test('beget-fallback', function () {
+        var copy = Object.create;
+        Object.create = null;
+
+        var base = {
+                property: 3,
+                property2: 4
+            },
+            extended = x.beget(base, {
+                property2: 5,
+                property3: 6
+            });
+
+        try {
+            equal(extended.property, 3, 'first property');
+            equal(extended.property2, 5, 'second property');
+            equal(extended.property3, 6, 'third property');
+        } catch (e) {
+            ok(false, 'equal fail');
+        } finally {
+            Object.create = copy;
+        }
+    });
 })();

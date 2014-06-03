@@ -183,7 +183,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     };
 
     ns.beget = function (baseObj, newObjectProperties) {
-        var obj = {},
+        var obj,
             typeBase = typeof baseObj,
             typeProperties = typeof newObjectProperties;
 
@@ -193,15 +193,30 @@ var xglobal = typeof global !== "undefined" ? global : this;
         if (typeProperties !== "undefined" && typeProperties !== "object") {
             ns.error("Only object allowed to be list of properties instead " + typeProperties);
         }
-        if (typeof Object.create !== "function") {
-            ns.error("Object.create function is required");
+        if (typeof Object.create === "function") {
+            obj = {};
+
+            x.each(newObjectProperties, function (value, key) {
+                obj[key]= {writable:true, enumerable: true, "value": value};
+            });
+
+            return Object.create(baseObj, obj);
+        } else {
+            var F = function () {};
+
+            // check if base Object exists
+            if (baseObj && typeof baseObj === "object") {
+                F.prototype = baseObj;
+            }
+            obj = new F();
+
+            if (typeof newObjectProperties !== "undefined") {
+                x.each(newObjectProperties, function (item, i) {
+                    obj[i] = item;
+                });
+            }
+            return obj;
         }
-
-        x.each(newObjectProperties, function (value, key) {
-            obj[key]= {writable:true, enumerable: true, "value": value};
-        });
-
-        return Object.create(baseObj, obj);
     };
 
     /**
