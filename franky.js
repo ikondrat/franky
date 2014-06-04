@@ -449,7 +449,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
             return el ? ns.data(el, name) : undefined;
         },
         getNodeElement: function () {
-            var x1 = ns.$("#" + this.id);
+            var x1 = ns.byId(this.id);
             return x1[0];
         },
         setId: function (id) {
@@ -460,7 +460,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     ns.Component = (function () {
         var components = [],
             componentsIndex = {},
-            appSelector = "*[data-xapp]";
+            appAttr = "data-xapp";
         return {
             extend: function (componentDescription) {
                 var i = components.length,
@@ -482,7 +482,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
             "initByHTML": function (context) {
                 var contextNode = context || document,
                     self = this,
-                    apps = ns.$(appSelector, contextNode);
+                    apps = ns.byAttr(appAttr, contextNode);
 
                 x.each(apps, function (element) {
                     var names = ns.data(element, "xapp");
@@ -509,11 +509,34 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
     })();
 
-    ns.$ = function (expr) {
+    var byAttrFallback = function (attr) {
+        var all = document.all,
+            res = [];
+
+        for (var i = 0, len = all.length; i < len; ++i) {
+            if (typeof all[i].getAttribute(attr) === 'string') {
+                res.push(all[i]);
+            }
+        }
+
+        return res;
+    };
+    ns.byAttr = function (attr) {
         var contextNode = arguments[1] || global.document || null;
 
-        return contextNode && ns.isFunc(contextNode.querySelectorAll) ?
-            contextNode.querySelectorAll(expr): [];
+        if (contextNode && contextNode.querySelectorAll) {
+            try {
+                return contextNode.querySelectorAll('[' + attr + ']');
+            } catch (e) {}
+        }
+
+        return byAttrFallback(attr);
+    };
+
+    ns.byId = function (id) {
+        var contextNode = arguments[1] || global.document || null;
+
+        return contextNode && contextNode.getElementById(id) || null;
     };
 
     ns.data = function (node, dataName) {
