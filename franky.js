@@ -122,17 +122,35 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return (typeof item === "object");
     };
 
-    ns.eachListItem = function (arr, callback) {
-        for (var i = 0, l = arr.length; i < l; i++) {
-            callback(arr[i], i, arr);
+    ns.eachListItem = function (arr, callback, thisArg) {
+        var i, l;
+
+        if (thisArg) {
+            for (i = 0, l = arr.length; i < l; i++) {
+                callback.call(thisArg, arr[i], i, arr);
+            }
+        } else {
+            for (i = 0, l = arr.length; i < l; i++) {
+                callback(arr[i], i, arr);
+            }
         }
         return this;
     };
 
-    ns.eachProperty = function (obj, callback) {
-        for (var item in obj) {
-            if (obj.hasOwnProperty(item)) {
-                callback(obj[item], item, obj);
+    ns.eachProperty = function (obj, callback, thisArg) {
+        var item;
+
+        if (thisArg) {
+            for (item in obj) {
+                if (obj.hasOwnProperty(item)) {
+                    callback.call(thisArg, obj[item], item, obj);
+                }
+            }
+        } else {
+            for (item in obj) {
+                if (obj.hasOwnProperty(item)) {
+                    callback(obj[item], item, obj);
+                }
             }
         }
         return this;
@@ -157,13 +175,14 @@ var xglobal = typeof global !== "undefined" ? global : this;
      * Iterates object or array with callback
      * @param  {Object}            array or object for iterate
      * @param  {Function}          callback fired on each item
+     * @param  {Object}            [thisArg=undefined] context for the callback
      * @returns {Object}           context object
      */
-    ns.each = ns.forEach = function (smth, callback) {
+    ns.each = ns.forEach = function (smth, callback, thisArg) {
         var targetFunction = (ns.isArray(smth) || ns.isArrayLike(smth)) ?
             ns.eachListItem : ns.eachProperty;
 
-        targetFunction(smth, callback);
+        targetFunction(smth, callback, thisArg);
         return this;
     };
 
