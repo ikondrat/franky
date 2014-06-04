@@ -539,15 +539,19 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return contextNode && contextNode.getElementById(id) || null;
     };
 
+    var ELEMENT_NODE = 1;
+    var elementCheck = function (node) {
+        return node && node.nodeType === ELEMENT_NODE;
+    };
     ns.data = function (node, dataName) {
-        if (!(node instanceof Element)) {
+        if (!elementCheck(node)) {
             ns.error("nodeElement expected as first argument instead of " + typeof node);
         }
         return node.getAttribute("data-" + dataName);
     };
 
     ns.getElementId = function (node) {
-        if (!(node instanceof Element)) {
+        if (!elementCheck(node)) {
             ns.error("nodeElement expected as first argument instead of " + typeof node);
         }
 
