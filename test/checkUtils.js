@@ -42,4 +42,23 @@
         );
     });
 
+    test('isFunc', function () {
+        ok(
+            x.isFunc(function(){}),
+            'isFunc single argument usage'
+        );
+        ok(
+            !x.isFunc({}),
+            'isFunc not a func'
+        );
+        ok(
+            !x.isFunc(true),
+            'isFunc not a func 2'
+        );
+        ok(
+            x.isFunc(Function.prototype.call, String.prototype.indexOf),
+            'isFunc multiple argument usage'
+        );
+    });
+
 })();

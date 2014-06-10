@@ -122,17 +122,35 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return (typeof item === "object");
     };
 
-    ns.eachListItem = function (arr, callback) {
-        for (var i = 0, l = arr.length; i < l; i++) {
-            callback(arr[i], i, arr);
+    ns.eachListItem = function (arr, callback, thisArg) {
+        var i, l;
+
+        if (thisArg) {
+            for (i = 0, l = arr.length; i < l; i++) {
+                callback.call(thisArg, arr[i], i, arr);
+            }
+        } else {
+            for (i = 0, l = arr.length; i < l; i++) {
+                callback(arr[i], i, arr);
+            }
         }
         return this;
     };
 
-    ns.eachProperty = function (obj, callback) {
-        for (var item in obj) {
-            if (obj.hasOwnProperty(item)) {
-                callback(obj[item], item, obj);
+    ns.eachProperty = function (obj, callback, thisArg) {
+        var item;
+
+        if (thisArg) {
+            for (item in obj) {
+                if (obj.hasOwnProperty(item)) {
+                    callback.call(thisArg, obj[item], item, obj);
+                }
+            }
+        } else {
+            for (item in obj) {
+                if (obj.hasOwnProperty(item)) {
+                    callback(obj[item], item, obj);
+                }
             }
         }
         return this;
@@ -157,13 +175,14 @@ var xglobal = typeof global !== "undefined" ? global : this;
      * Iterates object or array with callback
      * @param  {Object}            array or object for iterate
      * @param  {Function}          callback fired on each item
+     * @param  {Object}            [thisArg=undefined] context for the callback
      * @returns {Object}           context object
      */
-    ns.each = ns.forEach = function (smth, callback) {
+    ns.each = ns.forEach = function (smth, callback, thisArg) {
         var targetFunction = (ns.isArray(smth) || ns.isArrayLike(smth)) ?
             ns.eachListItem : ns.eachProperty;
 
-        targetFunction(smth, callback);
+        targetFunction(smth, callback, thisArg);
         return this;
     };
 
@@ -183,7 +202,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     };
 
     ns.beget = function (baseObj, newObjectProperties) {
-        var obj = {},
+        var obj,
             typeBase = typeof baseObj,
             typeProperties = typeof newObjectProperties;
 
@@ -193,15 +212,30 @@ var xglobal = typeof global !== "undefined" ? global : this;
         if (typeProperties !== "undefined" && typeProperties !== "object") {
             ns.error("Only object allowed to be list of properties instead " + typeProperties);
         }
-        if (typeof Object.create !== "function") {
-            ns.error("Object.create function is required");
+        if (typeof Object.create === "function") {
+            obj = {};
+
+            x.each(newObjectProperties, function (value, key) {
+                obj[key]= {writable:true, enumerable: true, "value": value};
+            });
+
+            return Object.create(baseObj, obj);
+        } else {
+            var F = function () {};
+
+            // check if base Object exists
+            if (baseObj && typeof baseObj === "object") {
+                F.prototype = baseObj;
+            }
+            obj = new F();
+
+            if (typeof newObjectProperties !== "undefined") {
+                x.each(newObjectProperties, function (item, i) {
+                    obj[i] = item;
+                });
+            }
+            return obj;
         }
-
-        x.each(newObjectProperties, function (value, key) {
-            obj[key]= {writable:true, enumerable: true, "value": value};
-        });
-
-        return Object.create(baseObj, obj);
     };
 
     /**
@@ -434,7 +468,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
             return el ? ns.data(el, name) : undefined;
         },
         getNodeElement: function () {
-            var x1 = ns.$("#" + this.id);
+            var x1 = ns.byId(this.id);
             return x1[0];
         },
         setId: function (id) {
@@ -445,7 +479,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
     ns.Component = (function () {
         var components = [],
             componentsIndex = {},
-            appSelector = "*[data-xapp]";
+            appAttr = "data-xapp";
         return {
             extend: function (componentDescription) {
                 var i = components.length,
@@ -467,7 +501,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
             "initByHTML": function (context) {
                 var contextNode = context || document,
                     self = this,
-                    apps = ns.$(appSelector, contextNode);
+                    apps = ns.byAttr(appAttr, contextNode);
 
                 x.each(apps, function (element) {
                     var names = ns.data(element, "xapp");
@@ -494,22 +528,49 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
     })();
 
-    ns.$ = function (expr) {
+    var byAttrFallback = function (attr) {
+        var all = document.all,
+            res = [];
+
+        for (var i = 0, len = all.length; i < len; ++i) {
+            if (typeof all[i].getAttribute(attr) === 'string') {
+                res.push(all[i]);
+            }
+        }
+
+        return res;
+    };
+    ns.byAttr = function (attr) {
         var contextNode = arguments[1] || global.document || null;
 
-        return contextNode && ns.isFunc(contextNode.querySelectorAll) ?
-            contextNode.querySelectorAll(expr): [];
+        if (contextNode && contextNode.querySelectorAll) {
+            try {
+                return contextNode.querySelectorAll('[' + attr + ']');
+            } catch (e) {}
+        }
+
+        return byAttrFallback(attr);
     };
 
+    ns.byId = function (id) {
+        var contextNode = arguments[1] || global.document || null;
+
+        return contextNode && contextNode.getElementById(id) || null;
+    };
+
+    var ELEMENT_NODE = 1;
+    var elementCheck = function (node) {
+        return node && node.nodeType === ELEMENT_NODE;
+    };
     ns.data = function (node, dataName) {
-        if (!(node instanceof Element)) {
+        if (!elementCheck(node)) {
             ns.error("nodeElement expected as first argument instead of " + typeof node);
         }
         return node.getAttribute("data-" + dataName);
     };
 
     ns.getElementId = function (node) {
-        if (!(node instanceof Element)) {
+        if (!elementCheck(node)) {
             ns.error("nodeElement expected as first argument instead of " + typeof node);
         }
 
