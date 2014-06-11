@@ -3,7 +3,6 @@
 
     test('each', function () {
         var array = [1, 2, 3, 4, 5],
-            array2 = [1],
             object = {a: 1, b: 2},
             sum = 0,
             str = '';
@@ -12,10 +11,6 @@
             sum += item;
         });
         equal(sum, 15, 'x.each: Simple each');
-
-        x.each(array2, function () {
-            equal(this, undefined, 'x.each: Undefined context');
-        });
 
         sum = 0;
         x.each(array, function (item, index) {
