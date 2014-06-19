@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    QUnit.module('franky');
+
     test('each', function () {
         var array = [1, 2, 3, 4, 5],
             object = {a: 1, b: 2},

@@ -3,6 +3,8 @@
 (function() {
     "use strict";
 
+    QUnit.module('franky');
+
     x.views.parseRules.test = function (key) {
         return function (d) {
             return key + d.x;

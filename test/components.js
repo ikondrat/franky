@@ -4,6 +4,7 @@
     "use strict";
     var testVariable;
 
+    QUnit.module('franky');
 
     x.Component.extend({
         id: "aaa",

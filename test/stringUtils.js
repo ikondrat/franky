@@ -3,6 +3,8 @@
 (function() {
     "use strict";
 
+    QUnit.module('franky');
+
     test('trim', function() {
         equal(
             x.trim(" a  a "),

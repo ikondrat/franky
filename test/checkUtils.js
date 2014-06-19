@@ -2,10 +2,8 @@
 /* jshint multistr: true */
 (function() {
     "use strict";
-  
-    if (typeof module === "function") {
-        module("franky");
-    }
+
+    QUnit.module('franky');
 
     var arr = [2,3,4],
         arrLike = {},

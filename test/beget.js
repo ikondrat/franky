@@ -3,6 +3,8 @@
 (function () {
     "use strict";
 
+    QUnit.module('franky');
+
     test('beget', function () {
 
         var baseObject = {
