@@ -469,7 +469,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
         },
         getNodeElement: function () {
             var x1 = ns.byId(this.id);
-            return x1[0];
+            return x1.length ? x1[0] : x1;
         },
         setId: function (id) {
             this.id = id;
