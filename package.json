@@ -21,7 +21,7 @@
         "uglify-js": "2.4.x"
     },
     "scripts": {
-        "test": "karma start karma.conf.js",
+        "test": "./node_modules/karma/bin/karma start karma.conf.js",
         "build": "uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js",
         "doc": "docco franky.js"
     },
