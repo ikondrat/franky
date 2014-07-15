@@ -1,3 +1,4 @@
 *.sublime-*
 raw
 node_modules
+.idea/*
