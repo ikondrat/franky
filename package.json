@@ -12,10 +12,6 @@
     },
     "main": "franky.js",
     "version": "1.0.0",
-    "engines": {
-        "node": ">=0.10.5",
-        "npm": ">=1.4.16"
-    },
     "devDependencies": {
         "docco": "0.6.x",
         "karma" : ">=0.12.16",
