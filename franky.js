@@ -75,17 +75,21 @@ var xglobal = typeof global !== "undefined" ? global : this;
     ns.log = ns.console.log;
     ns.error = ns.console.error;
 
-    var filterDegradation = function (arr, callback) {
-        var res = [];
+    var arrFilter = Array.prototype.filter ?
+        function (arr, callback) {
+            return arr.filter(callback);
+        } :
+        function (arr, callback) {
+            var res = [];
 
-        x.each(arr, function (item, i) {
-            if (callback(item, i, this)) {
-                res.push(item);
-            }
-        });
+            x.each(arr, function (item, i) {
+                if (callback(item, i, this)) {
+                    res.push(item);
+                }
+            });
 
-        return res;
-    };
+            return res;
+        };
 
     ns.filter = function (arr, callback) {
         if (!ns.isArray(arr)) {
@@ -98,15 +102,37 @@ var xglobal = typeof global !== "undefined" ? global : this;
                 "second argument is expected to be a function instead of " + typeof callback
             );
         }
+        return arrFilter(arr, callback);
+    };
 
-        if (!arr.filter) {
+    var arrSome = Array.prototype.some ?
+        function (arr, callback) {
+            return arr.some(callback);
+        } :
+        function (arr, callback) {
+            for (var i = 0, l = arr.length; i < l; i++) {
+                if (callback(arr[i], i, arr)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+    ns.some = function (arr, callback) {
+        if (!ns.isArray(arr)) {
             ns.error(
-                "filter function is not implemented by default"
+                "first argument is expected to be an array instead of " + typeof arr
             );
         }
 
-        return arr.filter ?
-            arr.filter(callback) : filterDegradation(callback);
+        if (!ns.isFunc(callback)) {
+            ns.error(
+                "second argument is expected to be a function instead of " + typeof callback
+            );
+        }
+
+        return arr.some ?
+            arr.some(callback) : arrSomeDegradaton();
 
     };
 
@@ -469,7 +495,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
         },
         getNodeElement: function () {
             var x1 = ns.byId(this.id);
-            return x1[0];
+            return x1.length ? x1[0] : x1;
         },
         setId: function (id) {
             this.id = id;
@@ -584,12 +610,12 @@ var xglobal = typeof global !== "undefined" ? global : this;
     };
 
     /**
-     * Appends query parameters to specified URI
-     * @param {String} url    URI for append query
-     * @param {Object} params Query params by key:value
-     *
-     * @returns {String} URI with inserted query parameters
-     */
+    * Appends query parameters to specified URI
+    * @param {String} url    URI for append query
+    * @param {Object} params Query params by key:value
+    *
+    * @returns {String} URI with inserted query parameters
+    */
     ns.constructURL = function (url, params) {
         var res = "",
             query = [],
@@ -599,7 +625,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         if (items && items[2]) {
             var cquery = items[2].split("&"),
-                i = cquery.length;
+            i = cquery.length;
 
             while (i--) {
                 query.push(cquery[i]);

@@ -14,11 +14,14 @@
     "version": "1.0.0",
     "devDependencies": {
         "docco": "0.6.x",
-        "phantomjs": "1.9.0-1",
+        "karma" : ">=0.12.16",
+        "karma-qunit": ">=0.1.1",
+        "karma-phantomjs-launcher": ">=0.1.4",
+        "karma-teamcity-reporter": ">=0.1.2",
         "uglify-js": "2.4.x"
     },
     "scripts": {
-        "test": "phantomjs test/vendor/runner.js test/index.html?noglobals=true",
+        "test": "karma start karma.conf.js",
         "build": "uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js",
         "doc": "docco franky.js"
     },
