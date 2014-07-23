@@ -570,7 +570,8 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         if (contextNode && contextNode.querySelectorAll) {
             try {
-                return contextNode.querySelectorAll('[' + attr + ']');
+                // safari 5: querySelectorAll returns function-like array
+                return Array.prototype.slice.call(contextNode.querySelectorAll('[' + attr + ']'));
             } catch (e) {}
         }
 
