@@ -131,8 +131,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
             );
         }
 
-        return arr.some ?
-            arr.some(callback) : arrSomeDegradaton();
+        return arrSome(arr, callback);
 
     };
 
