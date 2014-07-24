@@ -60,6 +60,15 @@
             "OK"
         );
 
+        equal(
+            //consumer
+            x.constructURL("//widgets-rc.yandex.ru?consumer=www-v43d1.wdevx#anchor", {
+                "areurobot": "yes",
+                "text": "blah"
+            }, ["consumer"]),
+            "//widgets-rc.yandex.ru?consumer=www-v43d1.wdevx&areurobot=yes&text=blah#anchor",
+            "OK"
+        );
     });
 
 })();
