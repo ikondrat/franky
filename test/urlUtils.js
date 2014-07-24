@@ -62,11 +62,11 @@
 
         equal(
             //consumer
-            x.constructURL("//widgets-rc.yandex.ru?consumer=www-v43d1.wdevx#anchor", {
+            x.constructURL("//myhomepage.com?a=1#anchor", {
                 "areurobot": "yes",
                 "text": "blah"
-            }, ["consumer"]),
-            "//widgets-rc.yandex.ru?consumer=www-v43d1.wdevx&areurobot=yes&text=blah#anchor",
+            }),
+            "//myhomepage.com?a=1&areurobot=yes&text=blah#anchor",
             "OK"
         );
     });
