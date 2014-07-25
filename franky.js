@@ -546,7 +546,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
                     if (typeof elementId !== "undefined") {
                         app.setId(elementId);
                     }
-                    app.init();
+                    app.init(elementId);
                 }
             }
         };
