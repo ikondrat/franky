@@ -69,5 +69,15 @@
             "//myhomepage.com?a=1&areurobot=yes&text=blah#anchor",
             "OK"
         );
+
+        equal(
+            //consumer
+            x.constructURL("/test/?a=1#anchor", {
+                "areurobot": "yes",
+                "text": "blah"
+            }),
+            "/test/?a=1&areurobot=yes&text=blah#anchor",
+            "OK"
+        );
     });
 })();

@@ -620,7 +620,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
         var res = "",
             query = [],
             item,
-            items = url.match(/((?:https?\:)?\/\/[^?]+)\?([^#]+)?(\#\S+)?/),
+            items = url.match(/((?:https?\:)?(?:\/)?\/[^?]+)\?([^#]+)?(\#\S+)?/),
             hashValue = items && items[3] ? items[3] : "";
 
         if (items && items[2]) {
