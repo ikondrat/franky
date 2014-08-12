@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>franky.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>franky.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> xglobal = <span class="hljs-keyword">typeof</span> global !== <span class="hljs-string">"undefined"</span> ? global : <span class="hljs-keyword">this</span>;
+
+(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(global, name)</span> </span>{
+<span class="hljs-pi">    "use strict"</span>;
+
+    <span class="hljs-keyword">var</span> ns = global[name] = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{},
+        isDebug = <span class="hljs-literal">true</span>;
+
+    ns.ns = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(self, namespace, callbackOnNs)</span> </span>{
+
+        <span class="hljs-keyword">if</span> (!self[namespace]) {
+            self[namespace] = {};
+        }
+
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> callbackOnNs !== <span class="hljs-string">"undefined"</span>) {
+            callbackOnNs.call(self[namespace]);
+        }
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    };
+
+    ns.getEmptyString = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{<span class="hljs-keyword">return</span> <span class="hljs-string">""</span>;};
+
+    <span class="hljs-comment">/**
+     * Formats string with pattern as first argument and values as other ones.
+     * E.g.: ns.stringf("%s %s", "hello", "world") -&gt; "hello world"
+     * @return {String} formated string
+     */</span>
+    ns.stringf = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">var</span> pattern = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">0</span>],
+            args = <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>);
+
+        <span class="hljs-keyword">return</span> pattern.replace(<span class="hljs-regexp">/%s/g</span>,
+            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{ <span class="hljs-keyword">return</span> args.shift()||<span class="hljs-string">""</span>; });
+
+    };
+
+    <span class="hljs-comment">/**
+     * Generates random number 
+     * @return {String} random number
+     */</span>
+    ns.generateId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">String</span>(<span class="hljs-built_in">Math</span>.random()).substr(<span class="hljs-number">2</span>);
+    };
+
+    ns.map = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+        <span class="hljs-keyword">if</span> (ns.isArray(arr) &amp;&amp; callback <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>) {
+            <span class="hljs-keyword">return</span> arr.map(callback);
+        }
+    };
+
+
+    ns.console = {
+        slog: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(pattern)</span> </span>{
+            <span class="hljs-keyword">this</span>.log( ns.stringf.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>) );
+        },
+
+        log: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> debug !== <span class="hljs-string">"undefined"</span>) {
+                debug(smth);
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (global.console &amp;&amp; global.console.log) {
+                global.console.log(smth);
+            }
+        },
+
+        error: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(txt)</span> </span>{
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(txt);
+        },
+
+        dir: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{
+            <span class="hljs-keyword">this</span>.log(<span class="hljs-built_in">JSON</span>.stringify(smth));
+        }
+    };
+    ns.log = ns.console.log;
+    ns.error = ns.console.error;
+
+    <span class="hljs-keyword">var</span> arrFilter = <span class="hljs-built_in">Array</span>.prototype.filter ?
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+            <span class="hljs-keyword">return</span> arr.filter(callback);
+        } :
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+            <span class="hljs-keyword">var</span> res = [];
+
+            x.each(arr, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item, i)</span> </span>{
+                <span class="hljs-keyword">if</span> (callback(item, i, <span class="hljs-keyword">this</span>)) {
+                    res.push(item);
+                }
+            });
+
+            <span class="hljs-keyword">return</span> res;
+        };
+
+    ns.filter = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+        <span class="hljs-keyword">if</span> (!ns.isArray(arr)) {
+            ns.error(
+                <span class="hljs-string">"first argument is expected to be an array instead of "</span> + <span class="hljs-keyword">typeof</span> arr
+            );
+        }
+        <span class="hljs-keyword">if</span> (!ns.isFunc(callback)) {
+            ns.error(
+                <span class="hljs-string">"second argument is expected to be a function instead of "</span> + <span class="hljs-keyword">typeof</span> callback
+            );
+        }
+        <span class="hljs-keyword">return</span> arrFilter(arr, callback);
+    };
+
+    <span class="hljs-keyword">var</span> arrSome = <span class="hljs-built_in">Array</span>.prototype.some ?
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+            <span class="hljs-keyword">return</span> arr.some(callback);
+        } :
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, l = arr.length; i &lt; l; i++) {
+                <span class="hljs-keyword">if</span> (callback(arr[i], i, arr)) {
+                    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+                }
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        };
+
+    ns.some = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
+        <span class="hljs-keyword">if</span> (!ns.isArray(arr)) {
+            ns.error(
+                <span class="hljs-string">"first argument is expected to be an array instead of "</span> + <span class="hljs-keyword">typeof</span> arr
+            );
+        }
+
+        <span class="hljs-keyword">if</span> (!ns.isFunc(callback)) {
+            ns.error(
+                <span class="hljs-string">"second argument is expected to be a function instead of "</span> + <span class="hljs-keyword">typeof</span> callback
+            );
+        }
+
+        <span class="hljs-keyword">return</span> arrSome(arr, callback);
+
+    };
+
+    ns.isArray = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
+        <span class="hljs-keyword">return</span> (item <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Array</span>);
+    };
+
+    ns.isArrayLike = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
+        <span class="hljs-keyword">return</span> (ns.isObject(item) &amp;&amp; !ns.isArray(item) &amp;&amp; <span class="hljs-string">"length"</span> <span class="hljs-keyword">in</span> item);
+    };
+
+    ns.isObject = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
+        <span class="hljs-keyword">return</span> (<span class="hljs-keyword">typeof</span> item === <span class="hljs-string">"object"</span>);
+    };
+
+    ns.eachListItem = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback, thisArg)</span> </span>{
+        <span class="hljs-keyword">var</span> i, l;
+
+        <span class="hljs-keyword">if</span> (thisArg) {
+            <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>, l = arr.length; i &lt; l; i++) {
+                callback.call(thisArg, arr[i], i, arr);
+            }
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>, l = arr.length; i &lt; l; i++) {
+                callback(arr[i], i, arr);
+            }
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    };
+
+    ns.eachProperty = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, callback, thisArg)</span> </span>{
+        <span class="hljs-keyword">var</span> item;
+
+        <span class="hljs-keyword">if</span> (thisArg) {
+            <span class="hljs-keyword">for</span> (item <span class="hljs-keyword">in</span> obj) {
+                <span class="hljs-keyword">if</span> (obj.hasOwnProperty(item)) {
+                    callback.call(thisArg, obj[item], item, obj);
+                }
+            }
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">for</span> (item <span class="hljs-keyword">in</span> obj) {
+                <span class="hljs-keyword">if</span> (obj.hasOwnProperty(item)) {
+                    callback(obj[item], item, obj);
+                }
+            }
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    };
+
+    ns.trimRe = (<span class="hljs-keyword">new</span> <span class="hljs-built_in">RegExp</span>()).compile(<span class="hljs-regexp">/^\s+|\s+$/g</span>);
+    ns.trim = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(str)</span> </span>{
+        <span class="hljs-keyword">var</span> paramsType = <span class="hljs-keyword">typeof</span> str;
+        <span class="hljs-keyword">if</span> (paramsType !== <span class="hljs-string">"string"</span>) {
+            ns.error(<span class="hljs-string">"Argument must be string but"</span> + paramsType + <span class="hljs-string">" passed"</span>);
+        }
+        <span class="hljs-keyword">return</span> str.trim <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span> ?
+            str.trim() :
+            str.replace(ns.trimRe, <span class="hljs-string">""</span>);
+    };
+
+    x.stripSpaces = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(str)</span> </span>{
+        <span class="hljs-keyword">return</span> str.split(<span class="hljs-string">" "</span>).join(<span class="hljs-string">""</span>);
+    };
+
+    <span class="hljs-comment">/**
+     * Iterates object or array with callback
+     * @param  {Object}            array or object for iterate
+     * @param  {Function}          callback fired on each item
+     * @param  {Object}            [thisArg=undefined] context for the callback
+     * @returns {Object}           context object
+     */</span>
+    ns.each = ns.forEach = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth, callback, thisArg)</span> </span>{
+        <span class="hljs-keyword">var</span> targetFunction = (ns.isArray(smth) || ns.isArrayLike(smth)) ?
+            ns.eachListItem : ns.eachProperty;
+
+        targetFunction(smth, callback, thisArg);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    };
+
+    ns.isFunc = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.every.call(
+            <span class="hljs-built_in">arguments</span>,
+            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> x <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>;}
+        );
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>нативный bind очень медленный в chrome браузерах
+<a href="http://jsperf.com/nativebind-vs-custombind">http://jsperf.com/nativebind-vs-custombind</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ns.bind = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(func, context)</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">return</span> func.apply(context, <span class="hljs-built_in">arguments</span>);
+        };
+    };
+
+    ns.beget = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(baseObj, newObjectProperties)</span> </span>{
+        <span class="hljs-keyword">var</span> obj,
+            typeBase = <span class="hljs-keyword">typeof</span> baseObj,
+            typeProperties = <span class="hljs-keyword">typeof</span> newObjectProperties;
+
+        <span class="hljs-keyword">if</span> (typeBase !== <span class="hljs-string">"object"</span>) {
+            ns.error(<span class="hljs-string">"Only object allowed to be prototype and tried to work with "</span> + typeBase);
+        }
+        <span class="hljs-keyword">if</span> (typeProperties !== <span class="hljs-string">"undefined"</span> &amp;&amp; typeProperties !== <span class="hljs-string">"object"</span>) {
+            ns.error(<span class="hljs-string">"Only object allowed to be list of properties instead "</span> + typeProperties);
+        }
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">Object</span>.create === <span class="hljs-string">"function"</span>) {
+            obj = {};
+
+            x.each(newObjectProperties, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value, key)</span> </span>{
+                obj[key]= {writable:<span class="hljs-literal">true</span>, enumerable: <span class="hljs-literal">true</span>, <span class="hljs-string">"value"</span>: value};
+            });
+
+            <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.create(baseObj, obj);
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">var</span> F = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>check if base Object exists</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (baseObj &amp;&amp; <span class="hljs-keyword">typeof</span> baseObj === <span class="hljs-string">"object"</span>) {
+                F.prototype = baseObj;
+            }
+            obj = <span class="hljs-keyword">new</span> F();
+
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> newObjectProperties !== <span class="hljs-string">"undefined"</span>) {
+                x.each(newObjectProperties, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item, i)</span> </span>{
+                    obj[i] = item;
+                });
+            }
+            <span class="hljs-keyword">return</span> obj;
+        }
+    };
+
+    <span class="hljs-comment">/**
+     * Creates interface description
+     * @param {string} name Name of interface
+     * @param {array} methods List of methods descibed as strings
+     * @constructor
+     */</span>
+    ns.Interface = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, methods)</span> </span>{
+        <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">arguments</span>.length !== <span class="hljs-number">2</span>) {
+            ns.error (
+                <span class="hljs-string">"Interface constructor called with "</span>+ <span class="hljs-built_in">arguments</span>.length +
+                <span class="hljs-string">"parameters, but expected exactly 2"</span>);
+        }
+
+        <span class="hljs-keyword">this</span>.methods = [];
+        <span class="hljs-keyword">this</span>.name = name;
+
+        x.each(methods, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(method)</span> </span>{
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> method !== <span class="hljs-string">"string"</span>) {
+                ns.error(<span class="hljs-string">"Interface constructor expects method "</span>+
+                    <span class="hljs-string">"names to be passed in as a string"</span>);
+            }
+
+            self.methods.push(method);
+        });
+    };
+
+    <span class="hljs-comment">/**
+     * Checks implementation of interface of interfaces for particular object
+     * @param {object} object    Object for check implementation
+     * @param {array} interfaces    Array of interfaces for check
+     * @returns {boolean}
+     */</span>
+    ns.Interface.ensureImplements = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(object, interfaces)</span> </span>{
+
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">arguments</span>.length !== <span class="hljs-number">2</span>) {
+            ns.error (
+                <span class="hljs-string">"Interface constructor called with "</span>+ <span class="hljs-built_in">arguments</span>.length +
+                <span class="hljs-string">"parameters, but expected at least 2"</span>);
+        }
+
+        x.each(interfaces, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(interfaceItem)</span> </span>{
+            <span class="hljs-keyword">if</span> (interfaceItem.constructor !== ns.Interface) {
+                ns.error(<span class="hljs-string">"Function Interface.ensureImplements expects arguments two and above to be instances of Interface."</span>);
+            }
+
+            x.each(interfaceItem.methods, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(method)</span> </span>{
+                <span class="hljs-keyword">if</span> (!object[method] || <span class="hljs-keyword">typeof</span> object[method] !== <span class="hljs-string">"function"</span>) {
+                    ns.error(<span class="hljs-string">"Function Interface.ensureImplements: object "</span>+
+                        <span class="hljs-string">"does not implement the "</span> + interfaceItem.name +
+                        <span class="hljs-string">" interface. Method "</span> + method + <span class="hljs-string">" was not found."</span>);
+                }
+            });
+        });
+    };
+
+    <span class="hljs-comment">/**
+     * Extends function by another function
+     * @param {function} subClass   Function for extend
+     * @param {function} superClass Function is used as superClass
+     */</span>
+    ns.extend = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(subClass, superClass)</span> </span>{
+        <span class="hljs-keyword">var</span> F = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{};
+        subClass.superclass = F.prototype = superClass.prototype;
+        subClass.prototype = <span class="hljs-keyword">new</span> F();
+        subClass.prototype.constructor = subClass;
+
+        <span class="hljs-keyword">if</span>(superClass.prototype.constructor === <span class="hljs-built_in">Object</span>.prototype.constructor) {
+            superClass.prototype.constructor = superClass;
+        }
+    };
+
+    ns.getJPathValue = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(smth, key)</span> </span>{
+        <span class="hljs-keyword">var</span> c = smth,
+            keys = key.split(<span class="hljs-string">"."</span>),
+            i = <span class="hljs-number">0</span>;
+
+        <span class="hljs-keyword">while</span>(c[keys[i]]) {
+            c = c[keys[i++]];
+        }
+
+        <span class="hljs-keyword">return</span> c;
+    };
+
+    ns.create = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj)</span> </span>{
+
+        <span class="hljs-keyword">var</span> F = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{};
+        F.prototype = obj;
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> F();
+    };
+
+    <span class="hljs-keyword">if</span> (isDebug) {
+        ns.ViewItem = <span class="hljs-keyword">new</span> x.Interface(<span class="hljs-string">"View"</span>, [<span class="hljs-string">"getCustomRender"</span>, <span class="hljs-string">"ruleFunction"</span>, <span class="hljs-string">"let"</span>, <span class="hljs-string">"get"</span>]);
+    }
+
+
+    ns.View = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(view)</span> </span>{
+        <span class="hljs-keyword">this</span>.templates = view &amp;&amp; view.templates ?
+            x.beget(view.templates) :
+            {};
+    };
+
+    ns.View.prototype = {
+        templates: {},
+
+        re: {
+            <span class="hljs-string">"parse"</span> : <span class="hljs-regexp">/\[%\s([^%]+)\s%\]/g</span>,
+            <span class="hljs-string">"rule"</span>: <span class="hljs-regexp">/\s*:\s*/</span>
+        },
+
+        getCustomRender: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">var</span> def = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">0</span>] !== <span class="hljs-string">"undefined"</span> ?
+                <span class="hljs-built_in">arguments</span>[<span class="hljs-number">0</span>].split(<span class="hljs-keyword">this</span>.re.rule) :
+                <span class="hljs-literal">null</span>;
+
+            <span class="hljs-keyword">if</span> (def &amp;&amp; def.length === <span class="hljs-number">2</span>) {
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.parseRules[def[<span class="hljs-number">0</span>]] &amp;&amp; <span class="hljs-keyword">this</span>.parseRules[def[<span class="hljs-number">0</span>]].call(<span class="hljs-keyword">this</span>, def[<span class="hljs-number">1</span>]);
+            }
+        },
+
+        parseRules: {
+            l10n: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key)</span></span>{
+                <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(d)</span> </span>{
+                    <span class="hljs-keyword">if</span> (isDebug &amp;&amp; !d.l10n(key)) {
+                        ns.console.error(<span class="hljs-string">"There is no translation for "</span> + key);
+                    }
+                    <span class="hljs-keyword">return</span> d.l10n ? d.l10n(key) : key;
+                };
+            },
+
+            jpath: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key)</span> </span>{
+                <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(d)</span> </span>{
+                    <span class="hljs-keyword">return</span> x.getJPathValue(d, key) || <span class="hljs-string">""</span>;
+                };
+            },
+
+            view: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key)</span> </span>{
+                <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
+
+                <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(d)</span> </span>{
+                    <span class="hljs-keyword">return</span> self.get(key, d);
+                };
+            }
+        },
+
+        ruleFunction: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(paramName, defaults)</span> </span>{
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.getCustomRender(paramName) || <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(d)</span> </span>{
+
+                <span class="hljs-keyword">var</span> res = d[paramName] || defaults[paramName];
+
+                <span class="hljs-keyword">if</span> (isDebug &amp;&amp; !res) {
+                    x.console.log(
+                        <span class="hljs-string">"Undefined variable"</span> + paramName
+                    );
+                }
+                <span class="hljs-keyword">return</span> res || <span class="hljs-string">""</span>;
+            };
+        },
+
+        <span class="hljs-string">"let"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, template, defaults)</span> </span>{
+
+            <span class="hljs-keyword">var</span> inTemplates = name <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.templates;
+
+
+            <span class="hljs-keyword">var</span> result = [],
+                superTmpl = name <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.templates ? <span class="hljs-keyword">this</span>.templates[name] : <span class="hljs-literal">null</span>,
+                self = <span class="hljs-keyword">this</span>,
+                i = <span class="hljs-number">0</span>;
+
+            result = <span class="hljs-keyword">this</span>.templates[name] = superTmpl ? x.create(superTmpl) : [];
+            <span class="hljs-keyword">if</span> (inTemplates) {
+                result._super = superTmpl;
+            }
+            template.replace(<span class="hljs-keyword">this</span>.re.parse, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(matchedExpression, matchedKey, matchedIndex)</span> </span>{
+                result.push(
+                    template.substr(i, matchedIndex - i),
+                    self.ruleFunction(matchedKey, defaults)
+                );
+                i = matchedIndex + matchedExpression.length;
+
+            });
+            <span class="hljs-keyword">if</span> (i &lt; template.length) {
+                result.push(template.substr(i));
+            }
+
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+        },
+        <span class="hljs-string">"get"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, data)</span> </span>{
+            <span class="hljs-keyword">var</span> template = <span class="hljs-keyword">this</span>.templates[name],
+                res = ns.isArray(template) ?
+                    x.map(template, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
+                        <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> item === <span class="hljs-string">"string"</span> ?
+                            item:
+                            item(data);
+                    }).join(<span class="hljs-string">""</span>):
+                    template;
+            <span class="hljs-keyword">return</span> res;
+        }
+    };
+
+    ns.views = <span class="hljs-keyword">new</span> ns.View();
+    ns.getObject = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj)</span> </span>{
+        obj.beget = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(values)</span> </span>{
+            <span class="hljs-keyword">return</span> x.beget(<span class="hljs-keyword">this</span>, values);
+        };
+
+        <span class="hljs-keyword">return</span> x.beget(obj);
+    };
+
+    ns.URLre = <span class="hljs-regexp">/^https?:\/\/\S+/i</span>;
+
+    ns.isURL = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(str)</span> </span>{
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> str !== <span class="hljs-string">"string"</span>) {
+            ns.error(<span class="hljs-string">"isURL expects string parameter instead "</span> + <span class="hljs-keyword">typeof</span> str);
+        }
+
+        <span class="hljs-keyword">return</span> ns.URLre.test(str);
+    };
+
+    <span class="hljs-keyword">var</span> intComponent = <span class="hljs-keyword">new</span> ns.Interface(<span class="hljs-string">"intComponent"</span>,
+        [<span class="hljs-string">"init"</span>, <span class="hljs-string">"data"</span>]
+    );
+
+    ns.ComponentBase = {
+        data: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name)</span> </span>{
+            <span class="hljs-keyword">var</span> el = <span class="hljs-keyword">this</span>.getNodeElement();
+
+            <span class="hljs-keyword">return</span> el ? ns.data(el, name) : <span class="hljs-literal">undefined</span>;
+        },
+        getNodeElement: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">var</span> x1 = ns.byId(<span class="hljs-keyword">this</span>.id);
+            <span class="hljs-keyword">return</span> x1.length ? x1[<span class="hljs-number">0</span>] : x1;
+        },
+        setId: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(id)</span> </span>{
+            <span class="hljs-keyword">this</span>.id = id;
+        }
+    };
+
+    ns.Component = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">var</span> components = [],
+            componentsIndex = {},
+            appAttr = <span class="hljs-string">"data-xapp"</span>;
+        <span class="hljs-keyword">return</span> {
+            extend: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(componentDescription)</span> </span>{
+                <span class="hljs-keyword">var</span> i = components.length,
+                    app = x.beget(ns.ComponentBase, componentDescription);
+
+                ns.Interface.ensureImplements(app, [intComponent]);
+
+                <span class="hljs-keyword">if</span> (!app.id) {
+                    ns.error(<span class="hljs-string">"extend method expects id field in description object"</span>);
+                }
+
+                components.push(app);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>fill index</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                componentsIndex[app.id] = i;
+                <span class="hljs-keyword">return</span> components[i];
+            },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>инициализация по структуре html</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-string">"initByHTML"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(context)</span> </span>{
+                <span class="hljs-keyword">var</span> contextNode = context || <span class="hljs-built_in">document</span>,
+                    self = <span class="hljs-keyword">this</span>,
+                    apps = ns.byAttr(appAttr, contextNode);
+
+                x.each(apps, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(element)</span> </span>{
+                    <span class="hljs-keyword">var</span> names = ns.data(element, <span class="hljs-string">"xapp"</span>);
+                    x.each(names.split(<span class="hljs-string">" "</span>), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(appName)</span> </span>{
+                        self.initById(appName,
+                            ns.getElementId(element)
+                        );
+                    });
+                });
+            },
+
+            <span class="hljs-string">"initById"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, elementId)</span> </span>{
+                <span class="hljs-keyword">var</span> app = name <span class="hljs-keyword">in</span> componentsIndex ?
+                        components[componentsIndex[name]] : <span class="hljs-literal">null</span>;
+
+                <span class="hljs-keyword">if</span> (app) {
+                    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> elementId !== <span class="hljs-string">"undefined"</span>) {
+                        app.setId(elementId);
+                    }
+                    app.init(elementId);
+                }
+            }
+        };
+
+    })();
+
+    <span class="hljs-keyword">var</span> byAttrFallback = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
+        <span class="hljs-keyword">var</span> all = <span class="hljs-built_in">document</span>.all,
+            res = [];
+
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, len = all.length; i &lt; len; ++i) {
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> all[i].getAttribute(attr) === <span class="hljs-string">'string'</span>) {
+                res.push(all[i]);
+            }
+        }
+
+        <span class="hljs-keyword">return</span> res;
+    };
+    ns.byAttr = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
+        <span class="hljs-keyword">var</span> contextNode = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>] || global.document || <span class="hljs-literal">null</span>;
+
+        <span class="hljs-keyword">if</span> (contextNode &amp;&amp; contextNode.querySelectorAll) {
+            <span class="hljs-keyword">try</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>safari 5: querySelectorAll returns function-like array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.slice.call(contextNode.querySelectorAll(<span class="hljs-string">'['</span> + attr + <span class="hljs-string">']'</span>));
+            } <span class="hljs-keyword">catch</span> (e) {}
+        }
+
+        <span class="hljs-keyword">return</span> byAttrFallback(attr);
+    };
+
+    ns.byId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(id)</span> </span>{
+        <span class="hljs-keyword">var</span> contextNode = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>] || global.document || <span class="hljs-literal">null</span>;
+
+        <span class="hljs-keyword">return</span> contextNode &amp;&amp; contextNode.getElementById(id) || <span class="hljs-literal">null</span>;
+    };
+
+    <span class="hljs-keyword">var</span> ELEMENT_NODE = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">var</span> elementCheck = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">return</span> node &amp;&amp; node.nodeType === ELEMENT_NODE;
+    };
+    ns.data = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node, dataName)</span> </span>{
+        <span class="hljs-keyword">if</span> (!elementCheck(node)) {
+            ns.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
+        }
+        <span class="hljs-keyword">return</span> node.getAttribute(<span class="hljs-string">"data-"</span> + dataName);
+    };
+
+    ns.getElementId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">if</span> (!elementCheck(node)) {
+            ns.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
+        }
+
+        <span class="hljs-keyword">var</span> id = node.getAttribute(<span class="hljs-string">"id"</span>);
+        <span class="hljs-keyword">if</span> (!id) {
+            id = <span class="hljs-string">"_"</span> + ns.generateId();
+            node.setAttribute(<span class="hljs-string">"id"</span>, id);
+        }
+
+        <span class="hljs-keyword">return</span> id;
+    };
+
+    <span class="hljs-comment">/**
+    * Appends query parameters to specified URI
+    * @param {String} url    URI for append query
+    * @param {Object} params Query params by key:value
+    *
+    * @returns {String} URI with inserted query parameters
+    */</span>
+    ns.constructURL = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(url, params)</span> </span>{
+        <span class="hljs-keyword">var</span> res = <span class="hljs-string">""</span>,
+            query = [],
+            item,
+            items = url.match(<span class="hljs-regexp">/((?:https?\:)?(?:\/)?\/[^?]+)\?([^#]+)?(\#\S+)?/</span>),
+            hashValue = items &amp;&amp; items[<span class="hljs-number">3</span>] ? items[<span class="hljs-number">3</span>] : <span class="hljs-string">""</span>;
+
+        <span class="hljs-keyword">if</span> (items &amp;&amp; items[<span class="hljs-number">2</span>]) {
+            <span class="hljs-keyword">var</span> cquery = items[<span class="hljs-number">2</span>].split(<span class="hljs-string">"&amp;"</span>),
+            i = cquery.length;
+
+            <span class="hljs-keyword">while</span> (i--) {
+                query.push(cquery[i]);
+            }
+        }
+        <span class="hljs-keyword">for</span> (item <span class="hljs-keyword">in</span> params) {
+            <span class="hljs-keyword">if</span> (params.hasOwnProperty(item)) {
+                query.push(item + <span class="hljs-string">"="</span> + params[item]);
+            }
+        }
+
+        <span class="hljs-keyword">if</span> (items) {
+
+            res = items[<span class="hljs-number">1</span>] + <span class="hljs-string">"?"</span> + query.join(<span class="hljs-string">"&amp;"</span>) + hashValue;
+        } <span class="hljs-keyword">else</span> {
+            res = url + <span class="hljs-string">"?"</span> + query.join(<span class="hljs-string">"&amp;"</span>) + hashValue;
+        }
+
+        <span class="hljs-keyword">return</span> res;
+    };
+
+}(xglobal, <span class="hljs-string">"x"</span>));</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
