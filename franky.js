@@ -369,9 +369,10 @@ var xglobal = typeof global !== "undefined" ? global : this;
         templates: {},
 
         re: {
-            "parse" : /\[%\s([^%]+)\s%\]/g,
-            "rule": /\s*:\s*/
+            "parse" : /{{\s+([^}]+)\s+}}/g,
+            "rule": /:/
         },
+
 
         getCustomRender: function () {
             var def = arguments[0] !== "undefined" ?
@@ -432,7 +433,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
                 self = this,
                 i = 0;
 
-            result = this.templates[name] = superTmpl ? x.create(superTmpl) : [];
+            result = this.templates[name] = [];
             if (inTemplates) {
                 result._super = superTmpl;
             }
@@ -451,7 +452,7 @@ var xglobal = typeof global !== "undefined" ? global : this;
             return this;
         },
         "get": function (name, data) {
-            var template = this.templates[name],
+            var template = data && data.views ? data.views.templates[name] : this.templates[name],
                 res = ns.isArray(template) ?
                     x.map(template, function (item) {
                         return typeof item === "string" ?

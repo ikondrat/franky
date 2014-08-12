@@ -13,11 +13,11 @@
 
     x.views.
         let("test", "hello world").
-        let("test2", "here is [% variable %] something for [% variable2 %]").
-        let("testOlolo", "here is [% test:something %]").
-        let("testJpath", "here is [% jpath:x.y.z %]").
-        let("t1", "blah blah [% view:t2 %]").
-        let("t2", "blah blah [% view:t3 %]").
+        let("test2", "here is {{ variable }} something for {{ variable2 }}").
+        let("testOlolo", "here is {{ test:something }}").
+        let("testJpath", "here is {{ jpath:x.y.z }}").
+        let("t1", "blah blah {{ view:t2 }}").
+        let("t2", "blah blah {{ view:t3 }}").
         let("t3", "blah blah");
 
     test('simple', function() {
@@ -75,21 +75,21 @@
         );
 
     });
-/*
+
+    x.views.
+        let("t1", "blah blah {{ view:t2 }}").
+        let("t2", "blah blah {{ view:t3 }}").
+        let("t3", "blah blah");
+
     test('inherit', function() {
         var customViews = new x.View(x.views);
         customViews.let("t3", "oops");
         
         equal(
-            customViews.get("t1"),
+            customViews.get("t1", {views:customViews}),
             "blah blah blah blah oops"
         );
 
-        equal(
-            x.views.get("t1"),
-            "blah blah blah blah blah blah"
-        );
-
     });
-*/
+
 })();
