@@ -87,7 +87,54 @@
         
         equal(
             customViews.get("t1", {views:customViews}),
-            "blah blah blah blah oops"
+            "blah blah blah blah oops",
+            "basic inheritance failed"
+        );
+
+    });
+
+    test('document', function() {
+        x.views.
+            let('document', '{{ doctype }}<html{{ document-attrs }}><head>{{ head }}</head><body{{ body-attrs }}>{{ body-content }}</body></html>').
+            let('head', '<title>{{ title }}</title>{{ styles }}{{ scripts }}').
+            let('doctype', '<!DOCTYPE html>').
+            let('document-attrs', ' lang="ru"').
+            let('body-content', 'hello world').
+            let('title', 'base title').
+            let('styles', '<style>body {font-size: 1em;}</style>').
+            let('scripts', '<script>alert("hello world")</script>').
+            let('body-attrs', ' class="b-page"');
+
+        var customViews = new x.View(x.views);
+
+        equal(
+            customViews.get("document", {views:customViews}),
+            '<!DOCTYPE html><html lang="ru">' +
+                '<head>' +
+                    '<title>base title</title>' +
+                    '<style>body {font-size: 1em;}</style>' +
+                    '<script>alert("hello world")</script>' +
+                '</head><body class="b-page">hello world</body></html>',
+            "document base test failed"
+        );
+
+        customViews.let("t3", "oops").
+            let("title", "modified title").
+            let("body-content", "Meine lieben Augustin");
+
+        equal(
+            customViews.get("document", {views:customViews}),
+            '<!DOCTYPE html><html lang="ru"><head><title>modified title</title><style>body {font-size: 1em;}</style><script>alert("hello world")</script></head><body class="b-page">Meine lieben Augustin</body></html>',
+            "document test failed"
+        );
+
+        var extraCustomViews = new x.View(customViews);
+        extraCustomViews.let("title", "uber title");
+
+        equal(
+            customViews.get("document", {views:extraCustomViews}),
+            '<!DOCTYPE html><html lang="ru"><head><title>uber title</title><style>body {font-size: 1em;}</style><script>alert("hello world")</script></head><body class="b-page">Meine lieben Augustin</body></html>',
+            "extraCustomViews document test failed"
         );
 
     });

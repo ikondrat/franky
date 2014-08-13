@@ -1,12 +1,28 @@
-var xglobal = typeof global !== "undefined" ? global : this;
+//     Franky.js 1.0.1
+//     (c) 2013-2014 Kondrat Shmoylov
+//     Franky may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     github.com/ikondrat/franky
+
+// Define the global object, `window` in the browser, or `exports` on the server.
+var xglobal = typeof global !== "undefined" ?
+    global : this;
 
 (function (global, name) {
     "use strict";
 
+    // Place defined namespace to global object - by default `x`.
     var ns = global[name] = function (smth) {},
         isDebug = true;
 
-    ns.ns = function (self, namespace, callbackOnNs) {
+    // Current version
+    ns.VERSION = '1.0.1';
+
+    // Base Functions
+    // --------------------
+
+    // Define namespace and callback function being fired when namespace reached
+    ns.ns = function (/**Object*/self, /**String*/namespace, /**Function*/callbackOnNs) /**Object*/ {
 
         if (!self[namespace]) {
             self[namespace] = {};
@@ -18,44 +34,61 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         return this;
     };
-
-    ns.getEmptyString = function () {return "";};
-
-    /**
-     * Formats string with pattern as first argument and values as other ones.
-     * E.g.: ns.stringf("%s %s", "hello", "world") -> "hello world"
-     * @return {String} formated string
-     */
-    ns.stringf = function () {
-
-        var pattern = arguments[0],
-            args = Array.prototype.slice.call(arguments, 1);
-
-        return pattern.replace(/%s/g,
-            function(){ return args.shift()||""; });
-
+    var ArrayProto = Array.prototype;
+    // Generate random value in range from 0 to specified `count`
+    ns.generateId = function (/**Number=*/count) /**Number*/ {
+        return parseInt(Math.random() * (count || 1e16));
     };
 
-    /**
-     * Generates random number 
-     * @return {String} random number
-     */
-    ns.generateId = function () {
-        return String(Math.random()).substr(2);
+    // Array test
+    ns.isArray = function (item) /**Boolean*/ {
+        return (item instanceof Array);
     };
 
-    ns.map = function (arr, callback) {
-        if (ns.isArray(arr) && callback instanceof Function) {
-            return arr.map(callback);
+    // Array-like structure test E.g.: `arguments` `collection`
+    ns.isArrayLike = function (item) {
+        return (ns.isObject(item) && !ns.isArray(item) && "length" in item);
+    };
+
+    // Object test
+    ns.isObject = function (item) /**Boolean*/ {
+        return (typeof item === "object");
+    };
+
+    // Function test
+    ns.isFunc = function () /**Boolean*/ {
+        return ArrayProto.every.call(
+            arguments,
+            function(x) { return x instanceof Function;}
+        );
+    };
+
+    // Creates object with `beget` property
+    ns.getObject = function (obj) {
+        obj.beget = function (values) {
+            return x.beget(this, values);
+        };
+        return x.beget(obj);
+    };
+
+
+    ns.getById = function (id) {
+        var contextNode = arguments[1] || global.document || null;
+
+        if (!contextNode.getElementById) {
+            throw new Error("getElementById wasn't found");
         }
+        return contextNode && contextNode.getElementById(id) || null;
     };
 
-
+    // Logging utilities
     ns.console = {
+        // formated log with pattern
         slog: function (pattern) {
             this.log( ns.stringf.apply(this, arguments) );
         },
 
+        // plain log
         log: function (smth) {
             if (typeof debug !== "undefined") {
                 debug(smth);
@@ -64,90 +97,279 @@ var xglobal = typeof global !== "undefined" ? global : this;
             }
         },
 
+        // error report with available stdout
         error: function (txt) {
             throw new Error(txt);
         },
 
+        // detailed log
         dir: function (smth) {
             this.log(JSON.stringify(smth));
         }
     };
+
+    // Log something in console
     ns.log = ns.console.log;
+
+    // Report about error
     ns.error = ns.console.error;
 
-    var arrFilter = Array.prototype.filter ?
-        function (arr, callback) {
-            return arr.filter(callback);
-        } :
-        function (arr, callback) {
-            var res = [];
+    // Native bind is too slow.
+    // [See](http://jsperf.com/nativebind-vs-custombind)
+    ns.bind = function (func, context) {
+        return function () {
+            return func.apply(context, arguments);
+        };
+    };
 
-            x.each(arr, function (item, i) {
-                if (callback(item, i, this)) {
-                    res.push(item);
-                }
+    // Create object with base object linked as prototype
+    ns.beget = function (/**Object*/baseObj, /**Object*/newObjectProperties) /**Object*/{
+        var res = {},
+            obj,
+            typeBase = typeof baseObj,
+            typeProperties = typeof newObjectProperties;
+
+        if (typeBase !== "object") {
+            ns.error("Only object allowed to be prototype and tried to work with " + typeBase);
+        }
+        if (typeProperties !== "undefined" && typeProperties !== "object") {
+            ns.error("Only object allowed to be list of properties instead " + typeProperties);
+        }
+        if (typeof Object.create === "function") {
+            obj = {};
+
+            x.each(newObjectProperties, function (value, key) {
+                obj[key]= {writable:true, enumerable: true, "value": value};
             });
 
-            return res;
-        };
+            res = Object.create(baseObj, obj);
+        } else {
+            var F = function () {};
 
-    ns.filter = function (arr, callback) {
-        if (!ns.isArray(arr)) {
-            ns.error(
-                "first argument is expected to be an array instead of " + typeof arr
-            );
-        }
-        if (!ns.isFunc(callback)) {
-            ns.error(
-                "second argument is expected to be a function instead of " + typeof callback
-            );
-        }
-        return arrFilter(arr, callback);
-    };
-
-    var arrSome = Array.prototype.some ?
-        function (arr, callback) {
-            return arr.some(callback);
-        } :
-        function (arr, callback) {
-            for (var i = 0, l = arr.length; i < l; i++) {
-                if (callback(arr[i], i, arr)) {
-                    return true;
-                }
+            // check if base Object exists
+            if (baseObj && typeof baseObj === "object") {
+                F.prototype = baseObj;
             }
-            return false;
+            obj = new F();
+
+            if (typeof newObjectProperties !== "undefined") {
+                x.each(newObjectProperties, function (item, i) {
+                    obj[i] = item;
+                });
+            }
+            res = obj;
+        }
+
+        return res;
+    };
+
+    // Creates interface description
+    ns.Interface = function (/**String*/name, /**Array*/methods) {
+        var self = this;
+        if (arguments.length !== 2) {
+            ns.error (
+                "Interface constructor called with "+ arguments.length +
+                    "parameters, but expected exactly 2");
+        }
+
+        this.methods = [];
+        this.name = name;
+
+        x.each(methods, function (method) {
+            if (typeof method !== "string") {
+                ns.error("Interface constructor expects method "+
+                    "names to be passed in as a string");
+            }
+
+            self.methods.push(method);
+        });
+    };
+
+    // Checks implementation of interface of interfaces for particular object
+    ns.Interface.ensureImplements = function (/**Object*/object, /**Array*/interfaces) /**Boolean*/ {
+
+        if (arguments.length !== 2) {
+            ns.error (
+                "Interface constructor called with "+ arguments.length +
+                    "parameters, but expected at least 2");
+        }
+
+        x.each(interfaces, function (interfaceItem) {
+            if (interfaceItem.constructor !== ns.Interface) {
+                ns.error("Function Interface.ensureImplements expects arguments two and above to be instances of Interface.");
+            }
+
+            x.each(interfaceItem.methods, function (method) {
+                if (!object[method] || typeof object[method] !== "function") {
+                    ns.error("Function Interface.ensureImplements: object "+
+                        "does not implement the " + interfaceItem.name +
+                        " interface. Method " + method + " was not found.");
+                }
+            });
+        });
+
+        return true;
+    };
+
+    // Extends function by another function
+    ns.extend = function (/**Function*/subClass, /**Function*/superClass) {
+        var F = function () {};
+        subClass.superclass = F.prototype = superClass.prototype;
+        subClass.prototype = new F();
+        subClass.prototype.constructor = subClass;
+
+        if(superClass.prototype.constructor === Object.prototype.constructor) {
+            superClass.prototype.constructor = superClass;
+        }
+    };
+
+    // Gets value from object by path
+    // > var a = {x: {a: 1}}; x.getJPathValue(a, 'x.1') -> 1
+    ns.getJPathValue = function(/**Object*/smth, /**String*/key) {
+        var c = smth,
+            keys = key.split("."),
+            i = 0;
+
+        while(c[keys[i]]) {
+            c = c[keys[i++]];
+        }
+
+        return c;
+    };
+
+    // String Functions
+    // --------------------
+
+    // Formats string with pattern as first argument and values as other ones.
+    // > var res = ns.stringf('%s %s', 'hello', 'world')
+    // > res === 'hello world'
+    ns.stringf = function (/**String*/pattern, /**String=*/value) /**String*/ {
+
+        var args = ArrayProto.slice.call(arguments, 1);
+
+        return pattern.replace(/%s/g,
+            function(){ return args.shift()||""; });
+    };
+
+    (function () {
+        var trimRe = (new RegExp()).compile(/^\s+|\s+$/g);
+
+        // Replaces empty spaces from start and end of string
+        ns.trim = function (/**String*/str) /**String*/ {
+            var paramsType = typeof str;
+            if (paramsType !== "string") {
+                ns.error("Argument must be string but" + paramsType + " passed");
+            }
+            return str.trim instanceof Function ?
+                str.trim() :
+                str.replace(trimRe, "");
         };
+    }());
 
-    ns.some = function (arr, callback) {
-        if (!ns.isArray(arr)) {
-            ns.error(
-                "first argument is expected to be an array instead of " + typeof arr
-            );
+
+    x.stripSpaces = function (str) {
+        return str.split(" ").join("");
+    };
+
+
+    (function () {
+        var URLre = /^https?:\/\/\S+/i;
+
+        // check string is URL
+        ns.isURL = function (/**String*/str) /**Boolean*/ {
+            if (typeof str !== "string") {
+                ns.error("isURL expects string parameter instead " + typeof str);
+            }
+
+            return URLre.test(str);
+        };
+    }());
+
+    // Array Functions
+    // --------------------
+
+    // Return the results of applying the callback to array item.
+    ns.map = function (/**Array*/arr, /**Function*/callback) /**Array*/ {
+        var res = [];
+        if (ns.isArray(arr) && callback instanceof Function) {
+            res = arr.map(callback);
         }
-
-        if (!ns.isFunc(callback)) {
-            ns.error(
-                "second argument is expected to be a function instead of " + typeof callback
-            );
-        }
-
-        return arrSome(arr, callback);
-
+        return res;
     };
 
-    ns.isArray = function (item) {
-        return (item instanceof Array);
-    };
+    (function(){
+        // Use filter pollyfill or existed function
+        var arrFilter = ArrayProto.filter ?
+            function (arr, callback) {
+                return arr.filter(callback);
+            } :
+            function (arr, callback) {
+                var res = [];
 
-    ns.isArrayLike = function (item) {
-        return (ns.isObject(item) && !ns.isArray(item) && "length" in item);
-    };
+                x.each(arr, function (item, i) {
+                    if (callback(item, i, this)) {
+                        res.push(item);
+                    }
+                });
 
-    ns.isObject = function (item) {
-        return (typeof item === "object");
-    };
+                return res;
+            };
 
-    ns.eachListItem = function (arr, callback, thisArg) {
+        // Select all items that pass a truth test.
+        ns.filter = function (/**Array*/arr, /**Function*/callback) /**Array*/ {
+            if (!ns.isArray(arr)) {
+                ns.error(
+                    "first argument is expected to be an array instead of " + typeof arr
+                );
+            }
+            if (!ns.isFunc(callback)) {
+                ns.error(
+                    "second argument is expected to be a function instead of " + typeof callback
+                );
+            }
+            return arrFilter(arr, callback);
+        };
+    }());
+
+    (function () {
+        // array some pollyfill
+        var arrSome = ArrayProto.some ?
+            function (arr, callback) {
+                return arr.some(callback);
+            } :
+            function (arr, callback) {
+                for (var i = 0, l = arr.length; i < l; i++) {
+                    if (callback(arr[i], i, arr)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+        // Check if at least one item in array matches a truth test.
+        ns.some = function (/**Array*/arr, /**Function*/callback) /**Boolean*/ {
+            if (!ns.isArray(arr)) {
+                ns.error(
+                    "first argument is expected to be an array instead of " + typeof arr
+                );
+            }
+
+            if (!ns.isFunc(callback)) {
+                ns.error(
+                    "second argument is expected to be a function instead of " + typeof callback
+                );
+            }
+
+            return arrSome(arr, callback);
+
+        };
+    }());
+
+    // Collection Functions
+    // --------------------
+
+    // Call function on each object item
+    ns.eachListItem = function (/**Array*/arr, /**Function*/callback, /**Object*/thisArg) /**Object*/{
         var i, l;
 
         if (thisArg) {
@@ -181,29 +403,8 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return this;
     };
 
-    ns.trimRe = (new RegExp()).compile(/^\s+|\s+$/g);
-    ns.trim = function (str) {
-        var paramsType = typeof str;
-        if (paramsType !== "string") {
-            ns.error("Argument must be string but" + paramsType + " passed");
-        }
-        return str.trim instanceof Function ?
-            str.trim() :
-            str.replace(ns.trimRe, "");
-    };
-
-    x.stripSpaces = function (str) {
-        return str.split(" ").join("");
-    };
-
-    /**
-     * Iterates object or array with callback
-     * @param  {Object}            array or object for iterate
-     * @param  {Function}          callback fired on each item
-     * @param  {Object}            [thisArg=undefined] context for the callback
-     * @returns {Object}           context object
-     */
-    ns.each = ns.forEach = function (smth, callback, thisArg) {
+    // Iterates through every object with callback
+    ns.each = ns.forEach = function (/**Object*/smth, /**Function*/callback, /**Object*/thisArg) /**Object*/ {
         var targetFunction = (ns.isArray(smth) || ns.isArrayLike(smth)) ?
             ns.eachListItem : ns.eachProperty;
 
@@ -211,155 +412,19 @@ var xglobal = typeof global !== "undefined" ? global : this;
         return this;
     };
 
-    ns.isFunc = function() {
-        return Array.prototype.every.call(
-            arguments,
-            function(x) { return x instanceof Function;}
-        );
-    };
-
-    // нативный bind очень медленный в chrome браузерах
-    // http://jsperf.com/nativebind-vs-custombind
-    ns.bind = function (func, context) {
-        return function () {
-            return func.apply(context, arguments);
-        };
-    };
-
-    ns.beget = function (baseObj, newObjectProperties) {
-        var obj,
-            typeBase = typeof baseObj,
-            typeProperties = typeof newObjectProperties;
-
-        if (typeBase !== "object") {
-            ns.error("Only object allowed to be prototype and tried to work with " + typeBase);
-        }
-        if (typeProperties !== "undefined" && typeProperties !== "object") {
-            ns.error("Only object allowed to be list of properties instead " + typeProperties);
-        }
-        if (typeof Object.create === "function") {
-            obj = {};
-
-            x.each(newObjectProperties, function (value, key) {
-                obj[key]= {writable:true, enumerable: true, "value": value};
-            });
-
-            return Object.create(baseObj, obj);
-        } else {
-            var F = function () {};
-
-            // check if base Object exists
-            if (baseObj && typeof baseObj === "object") {
-                F.prototype = baseObj;
-            }
-            obj = new F();
-
-            if (typeof newObjectProperties !== "undefined") {
-                x.each(newObjectProperties, function (item, i) {
-                    obj[i] = item;
-                });
-            }
-            return obj;
-        }
-    };
-
-    /**
-     * Creates interface description
-     * @param {string} name Name of interface
-     * @param {array} methods List of methods descibed as strings
-     * @constructor
-     */
-    ns.Interface = function (name, methods) {
-        var self = this;
-        if (arguments.length !== 2) {
-            ns.error (
-                "Interface constructor called with "+ arguments.length +
-                "parameters, but expected exactly 2");
-        }
-
-        this.methods = [];
-        this.name = name;
-
-        x.each(methods, function (method) {
-            if (typeof method !== "string") {
-                ns.error("Interface constructor expects method "+
-                    "names to be passed in as a string");
-            }
-
-            self.methods.push(method);
-        });
-    };
-
-    /**
-     * Checks implementation of interface of interfaces for particular object
-     * @param {object} object    Object for check implementation
-     * @param {array} interfaces    Array of interfaces for check
-     * @returns {boolean}
-     */
-    ns.Interface.ensureImplements = function (object, interfaces) {
-
-        if (arguments.length !== 2) {
-            ns.error (
-                "Interface constructor called with "+ arguments.length +
-                "parameters, but expected at least 2");
-        }
-
-        x.each(interfaces, function (interfaceItem) {
-            if (interfaceItem.constructor !== ns.Interface) {
-                ns.error("Function Interface.ensureImplements expects arguments two and above to be instances of Interface.");
-            }
-
-            x.each(interfaceItem.methods, function (method) {
-                if (!object[method] || typeof object[method] !== "function") {
-                    ns.error("Function Interface.ensureImplements: object "+
-                        "does not implement the " + interfaceItem.name +
-                        " interface. Method " + method + " was not found.");
-                }
-            });
-        });
-    };
-
-    /**
-     * Extends function by another function
-     * @param {function} subClass   Function for extend
-     * @param {function} superClass Function is used as superClass
-     */
-    ns.extend = function (subClass, superClass) {
-        var F = function () {};
-        subClass.superclass = F.prototype = superClass.prototype;
-        subClass.prototype = new F();
-        subClass.prototype.constructor = subClass;
-
-        if(superClass.prototype.constructor === Object.prototype.constructor) {
-            superClass.prototype.constructor = superClass;
-        }
-    };
-
-    ns.getJPathValue = function(smth, key) {
-        var c = smth,
-            keys = key.split("."),
-            i = 0;
-
-        while(c[keys[i]]) {
-            c = c[keys[i++]];
-        }
-
-        return c;
-    };
-
-    ns.create = function (obj) {
-
-        var F = function () {};
-        F.prototype = obj;
-        return new F();
-    };
-
     if (isDebug) {
         ns.ViewItem = new x.Interface("View", ["getCustomRender", "ruleFunction", "let", "get"]);
     }
 
+    // View Module
+    // --------------------
 
-    ns.View = function (view) {
+    // base constructor for view
+    // > var myViews = x.View();
+    // myViews.let('hello', 'hello');
+    // It can be based on existed view instance it's optional
+    // var uberView = x.View(myViews)
+    ns.View = function (/**Object*/view) {
         this.templates = view && view.templates ?
             x.beget(view.templates) :
             {};
@@ -372,7 +437,6 @@ var xglobal = typeof global !== "undefined" ? global : this;
             "parse" : /{{\s+([^}]+)\s+}}/g,
             "rule": /:/
         },
-
 
         getCustomRender: function () {
             var def = arguments[0] !== "undefined" ?
@@ -409,41 +473,53 @@ var xglobal = typeof global !== "undefined" ? global : this;
             }
         },
 
-        ruleFunction: function (paramName, defaults) {
+        ruleFunction: function (paramName, defaults, superTemplates) {
             return this.getCustomRender(paramName) || function (d) {
+                // Get value from `data` or from described `views`
+                var res = d[paramName] ||
+                    (d.views && d.views.get(paramName, d));
 
-                var res = d[paramName] || defaults[paramName];
-
+                // If result is still empty try to reach other resources
+                if (!res) {
+                    // first - try to walk through superTemplates
+                    res =  superTemplates[paramName] ?
+                        self.getContent(superTemplates[paramName], d) :
+                        // or get values from described defaults in template declaration
+                        defaults[paramName];
+                }
                 if (isDebug && !res) {
                     x.console.log(
-                        "Undefined variable" + paramName
+                        "Undefined variable " + paramName
                     );
                 }
                 return res || "";
             };
         },
 
-        "let": function (name, template, defaults) {
+        // Returns processed string
+        getContent: function (/**Array|Object*/tmpl, /**Object*/data) /**String*/{
+            return ns.isArray(tmpl) ?
+                x.map(tmpl, function (item) {
+                    return typeof item === "string" ?
+                        item:
+                        item(data);
+                }).join(""):
+                tmpl.toString();
+        },
 
-            var inTemplates = name in this.templates;
+        // Declares template with name
+        "let": function (/**String*/name, /**String|Function*/template, /**Object*/defaults) /**Object*/ {
 
-
-            var result = [],
-                superTmpl = name in this.templates ? this.templates[name] : null,
+            var result = this.templates[name] = [],
                 self = this,
                 i = 0;
 
-            result = this.templates[name] = [];
-            if (inTemplates) {
-                result._super = superTmpl;
-            }
             template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
                 result.push(
                     template.substr(i, matchedIndex - i),
-                    self.ruleFunction(matchedKey, defaults)
+                    self.ruleFunction(matchedKey, defaults, self.templates)
                 );
                 i = matchedIndex + matchedExpression.length;
-
             });
             if (i < template.length) {
                 result.push(template.substr(i));
@@ -451,54 +527,59 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
             return this;
         },
-        "get": function (name, data) {
-            var template = data && data.views ? data.views.templates[name] : this.templates[name],
-                res = ns.isArray(template) ?
-                    x.map(template, function (item) {
-                        return typeof item === "string" ?
-                            item:
-                            item(data);
-                    }).join(""):
-                    template;
-            return res;
+
+        // Gets transformed value by defined template and data
+        "get": function (/**String*/name, /**Object*/data) /**String*/ {
+            var self = this;
+            var template = data && data.views ?
+                    data.views.templates[name] : this.templates[name];
+            return self.getContent(template, data);
         }
     };
 
+    // We have default instanced view for manipulations
+    // > x.views.let('say', 'hello {{someone}}')
+    // x.views.get('say', {someone: "jhon"}) -> 'hello jhon'
     ns.views = new ns.View();
-    ns.getObject = function (obj) {
-        obj.beget = function (values) {
-            return x.beget(this, values);
-        };
 
-        return x.beget(obj);
-    };
-
-    ns.URLre = /^https?:\/\/\S+/i;
-
-    ns.isURL = function (str) {
-        if (typeof str !== "string") {
-            ns.error("isURL expects string parameter instead " + typeof str);
-        }
-
-        return ns.URLre.test(str);
-    };
-
+    // Component Module
+    // --------------------
     var intComponent = new ns.Interface("intComponent",
         ["init", "data"]
     );
 
+    ns.dataset = function (element) {
+        var res = {};
+        if (element instanceof Element) {
+            if (element.dataset) {
+                res = element.dataset
+            } else {
+                x.each(element.attributes, function (item, key) {
+                    if (item.name.indexOf("data-") === 0) {
+                        res[item.name.substr(5)] = item.value;
+                    }
+                });
+            }
+        }
+        return res;
+    };
+    // Component's base methods
     ns.ComponentBase = {
-        data: function (name) {
-            var el = this.getNodeElement();
-
+        // Gets data by key
+        data: function (/**String*/name) /**String*/ {
+            var el = this.element;
             return el ? ns.data(el, name) : undefined;
-        },
-        getNodeElement: function () {
-            var x1 = ns.byId(this.id);
-            return x1.length ? x1[0] : x1;
         },
         setId: function (id) {
             this.id = id;
+            return this;
+        },
+        baseInit: function (id, element) {
+            var self = this;
+            this.element = element;
+            x.each(ns.dataset(element), function (value, key) {
+                self[key] = value;
+            })
         }
     };
 
@@ -507,6 +588,13 @@ var xglobal = typeof global !== "undefined" ? global : this;
             componentsIndex = {},
             appAttr = "data-xapp";
         return {
+            // Cornerstone of Component moodule - method for creating new components
+            // > x.Component.extend({
+            //  id: "test",
+            //  init: function () {
+            //      ....
+            //  }
+            // })
             extend: function (componentDescription) {
                 var i = components.length,
                     app = x.beget(ns.ComponentBase, componentDescription);
@@ -523,30 +611,39 @@ var xglobal = typeof global !== "undefined" ? global : this;
                 return components[i];
             },
 
-            // инициализация по структуре html
-            "initByHTML": function (context) {
+            // We can init Component module by HTML.
+            // E.g. `<div data-xapp='test'></div>`
+            // All components must be defined by data-xapp attributes for being inited
+            // >E.g. `<div data-xapp='test'></div>`
+            // Then x.Component.initByHTML can be called and all assigned components are being called by `init` function
+            // `document.addEventListener( "DOMContentLoaded", function () {
+            //   x.Component.initByHTML()
+            // })`
+            "initByHTML": function (/**Element*/context) {
                 var contextNode = context || document,
                     self = this,
-                    apps = ns.byAttr(appAttr, contextNode);
+                    apps = ns.getElementsByAttr(appAttr, contextNode);
 
                 x.each(apps, function (element) {
                     var names = ns.data(element, "xapp");
                     x.each(names.split(" "), function (appName) {
-                        self.initById(appName,
-                            ns.getElementId(element)
+                        self.initById(
+                            appName,
+                            ns.getElementId(element),
+                            element
                         );
                     });
                 });
             },
-
-            "initById": function (name, elementId) {
+            "initById": function (name, elementId, appElement) {
                 var app = name in componentsIndex ?
-                        components[componentsIndex[name]] : null;
+                    components[componentsIndex[name]] : null;
 
                 if (app) {
                     if (typeof elementId !== "undefined") {
                         app.setId(elementId);
                     }
+                    app.baseInit(elementId, appElement);
                     app.init(elementId);
                 }
             }
@@ -554,7 +651,8 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
     })();
 
-    var byAttrFallback = function (attr) {
+    var getElementsByAttrFallback = function (attr) {
+        x.log("fallback");
         var all = document.all,
             res = [];
 
@@ -566,23 +664,23 @@ var xglobal = typeof global !== "undefined" ? global : this;
 
         return res;
     };
-    ns.byAttr = function (attr) {
-        var contextNode = arguments[1] || global.document || null;
-
+    ns.getElementsByAttr = function (attr) {
+        var res = [],
+            contextNode = arguments[1] || global.document || null;
+        if (contextNode.getAttribute(attr)) {
+            res.push(contextNode);
+        }
         if (contextNode && contextNode.querySelectorAll) {
             try {
                 // safari 5: querySelectorAll returns function-like array
-                return Array.prototype.slice.call(contextNode.querySelectorAll('[' + attr + ']'));
+                res = res.concat(ArrayProto.slice.call(contextNode.querySelectorAll('[' + attr + ']')));
             } catch (e) {}
         }
+        if (!res.length) {
+            res = res.concat(getElementsByAttrFallback(attr));
+        }
 
-        return byAttrFallback(attr);
-    };
-
-    ns.byId = function (id) {
-        var contextNode = arguments[1] || global.document || null;
-
-        return contextNode && contextNode.getElementById(id) || null;
+        return res;
     };
 
     var ELEMENT_NODE = 1;

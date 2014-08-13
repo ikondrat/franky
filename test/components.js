@@ -1,10 +1,10 @@
-/* global x, equal, ok */
+/* global x */
 /* jshint multistr: true */
-(function() {
+(function (q) {
     "use strict";
     var testVariable;
 
-    QUnit.module('franky');
+    q.module('franky');
 
     x.Component.extend({
         id: "aaa",
@@ -20,27 +20,35 @@
         }
     });
 
-    test('Components: custom call of init', function() {
+    q.test('Components: custom call of init', function() {
         x.Component.initById("aaa");
-        equal(
+        q.equal(
             testVariable,
             123,
             "The result must be 123"
         );
     });
 
-    /*
-    if (typeof document !== "undefined") {
-        test('Components: initByHTML', function() {
-            x.Component.initByHTML();
-            equal(
-                testVariable,
-                "olollo",
-                "The result must be 123"
-            );
+    q.test('Components: check init', function() {
+        var doc = document.createElement('div'),
+            testData = "";
+
+        doc.setAttribute("data-xapp", "hello");
+        doc.setAttribute("data-var1", "hello");
+        doc.setAttribute("data-var2", "world");
+
+        x.Component.extend({
+            'id': "hello",
+            'init': function () {
+                testData = this.var1 + " " + this.var2;
+            }
         });
-    }
-    */
+        x.Component.initByHTML(doc);
+        q.equal(
+            testData,
+            "hello world",
+            "check init failed"
+        );
+    });
 
-
-})();
+})(QUnit);
