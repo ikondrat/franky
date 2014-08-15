@@ -1,12 +1,10 @@
 [![Build Status](https://travis-ci.org/ikondrat/franky.png?branch=master)](https://travis-ci.org/ikondrat/franky)
 
-Franky
+Franky.js
 ======
 
 JavaScript framework for everyday usage
 
-Licensing
-=========
+Maybe you want to see [annotated source](http://ikondrat.github.io/franky/)
 
-This software is licensed under the terms in the file named "LICENSE" in this
-directory.
+
