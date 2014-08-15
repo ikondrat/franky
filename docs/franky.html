@@ -134,7 +134,8 @@ github.com/ikondrat/franky
         }
 
         <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
-    };</pre></div></div>
+    };
+    <span class="hljs-keyword">var</span> ArrayProto = <span class="hljs-built_in">Array</span>.prototype;</pre></div></div>
             
         </li>
         
@@ -213,44 +214,12 @@ github.com/ikondrat/franky
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>Function test</p>
+              <p>Object test</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    ns.isFunc = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> /**<span class="hljs-title">Boolean</span>*/ </span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.every.call(
-            <span class="hljs-built_in">arguments</span>,
-            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> x <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>;}
-        );
-    };
-
-    ns.getObject = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj)</span> </span>{
-        obj.beget = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(values)</span> </span>{
-            <span class="hljs-keyword">return</span> x.beget(<span class="hljs-keyword">this</span>, values);
-        };
-        <span class="hljs-keyword">return</span> x.beget(obj);
-    };
-
-    ns.console = {
-        slog: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(pattern)</span> </span>{
-            <span class="hljs-keyword">this</span>.log( ns.stringf.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>) );
-        },
-
-        log: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{
-            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> debug !== <span class="hljs-string">"undefined"</span>) {
-                debug(smth);
-            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (global.console &amp;&amp; global.console.log) {
-                global.console.log(smth);
-            }
-        },
-
-        error: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(txt)</span> </span>{
-            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(txt);
-        },
-
-        dir: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{
-            <span class="hljs-keyword">this</span>.log(<span class="hljs-built_in">JSON</span>.stringify(smth));
-        }
+            <div class="content"><div class='highlight'><pre>    ns.isString = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> /**<span class="hljs-title">Boolean</span>*/ </span>{
+        <span class="hljs-keyword">return</span> (<span class="hljs-keyword">typeof</span> item === <span class="hljs-string">"string"</span>);
     };</pre></div></div>
             
         </li>
@@ -262,11 +231,16 @@ github.com/ikondrat/franky
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p>Log something in console</p>
+              <p>Function test</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    ns.log = ns.console.log;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    ns.isFunction = ns.isFunc = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> /**<span class="hljs-title">Boolean</span>*/ </span>{
+        <span class="hljs-keyword">return</span> ArrayProto.every.call(
+            <span class="hljs-built_in">arguments</span>,
+            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> x <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>;}
+        );
+    };</pre></div></div>
             
         </li>
         
@@ -277,11 +251,26 @@ github.com/ikondrat/franky
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p>Report about error</p>
+              <p>Creates object with <code>beget</code> property</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    ns.error = ns.console.error;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    ns.getObject = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj)</span> </span>{
+        obj.beget = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(values)</span> </span>{
+            <span class="hljs-keyword">return</span> x.beget(<span class="hljs-keyword">this</span>, values);
+        };
+        <span class="hljs-keyword">return</span> x.beget(obj);
+    };
+
+
+    ns.getById = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(id)</span> </span>{
+        <span class="hljs-keyword">var</span> contextNode = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>] || global.document || <span class="hljs-literal">null</span>;
+
+        <span class="hljs-keyword">if</span> (!contextNode.getElementById) {
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"getElementById wasn't found"</span>);
+        }
+        <span class="hljs-keyword">return</span> contextNode &amp;&amp; contextNode.getElementById(id) || <span class="hljs-literal">null</span>;
+    };</pre></div></div>
             
         </li>
         
@@ -291,6 +280,228 @@ github.com/ikondrat/franky
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Logging utilities</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ns.console = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>formated log with pattern</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        slog: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(pattern)</span> </span>{
+            <span class="hljs-keyword">this</span>.log( ns.stringf.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>) );
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>plain log</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        log: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> debug !== <span class="hljs-string">"undefined"</span>) {
+                debug(smth);
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (global.console &amp;&amp; global.console.log) {
+                global.console.log(smth);
+            }
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>error report with available stdout</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        error: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(txt)</span> </span>{
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(txt);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>detailed log</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        dir: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{
+            <span class="hljs-keyword">this</span>.log(<span class="hljs-built_in">JSON</span>.stringify(smth));
+        }
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Log something in console</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ns.log = ns.console.log;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Report about error</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ns.error = ns.console.error;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>We may fetch all data-* values.
+For docFragment as <code>&#39;&lt;div data-var1=&quot;hello&quot; data-var2=&quot;world&quot;&gt;&lt;/div&gt;&#39;</code></p>
+<blockquote>
+<p>x.datatset(docFragment).var1 -&gt; ‘hello’
+x.datatset(docFragment).var2 -&gt; ‘world’</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ns.dataset = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(element)</span> </span>{
+        <span class="hljs-keyword">var</span> res = {};
+        <span class="hljs-keyword">if</span> (element <span class="hljs-keyword">instanceof</span> Element) {
+            <span class="hljs-keyword">if</span> (element.dataset) {
+                res = element.dataset
+            } <span class="hljs-keyword">else</span> {
+                x.each(element.attributes, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item, key)</span> </span>{
+                    <span class="hljs-keyword">if</span> (item.name.indexOf(<span class="hljs-string">"data-"</span>) === <span class="hljs-number">0</span>) {
+                        res[item.name.substr(<span class="hljs-number">5</span>)] = item.value;
+                    }
+                });
+            }
+        }
+        <span class="hljs-keyword">return</span> res;
+    };
+
+    <span class="hljs-keyword">var</span> getElementsByAttrFallback = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
+        x.log(<span class="hljs-string">"fallback"</span>);
+        <span class="hljs-keyword">var</span> all = <span class="hljs-built_in">document</span>.all,
+            res = [];
+
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, len = all.length; i &lt; len; ++i) {
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> all[i].getAttribute(attr) === <span class="hljs-string">'string'</span>) {
+                res.push(all[i]);
+            }
+        }
+
+        <span class="hljs-keyword">return</span> res;
+    };
+    ns.getElementsByAttr = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
+        <span class="hljs-keyword">var</span> res = [],
+            contextNode = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>] || global.document || <span class="hljs-literal">null</span>;
+        <span class="hljs-keyword">if</span> (contextNode.getAttribute(attr)) {
+            res.push(contextNode);
+        }
+        <span class="hljs-keyword">if</span> (contextNode &amp;&amp; contextNode.querySelectorAll) {
+            <span class="hljs-keyword">try</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>safari 5: querySelectorAll returns function-like array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                res = res.concat(ArrayProto.slice.call(contextNode.querySelectorAll(<span class="hljs-string">'['</span> + attr + <span class="hljs-string">']'</span>)));
+            } <span class="hljs-keyword">catch</span> (e) {}
+        }
+        <span class="hljs-keyword">if</span> (!res.length) {
+            res = res.concat(getElementsByAttrFallback(attr));
+        }
+
+        <span class="hljs-keyword">return</span> res;
+    };
+
+    <span class="hljs-keyword">var</span> ELEMENT_NODE = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">var</span> elementCheck = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">return</span> node &amp;&amp; node.nodeType === ELEMENT_NODE;
+    };
+    ns.data = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node, dataName)</span> </span>{
+        <span class="hljs-keyword">if</span> (!elementCheck(node)) {
+            ns.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
+        }
+        <span class="hljs-keyword">return</span> node.getAttribute(<span class="hljs-string">"data-"</span> + dataName);
+    };
+
+    ns.getElementId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">if</span> (!elementCheck(node)) {
+            ns.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
+        }
+
+        <span class="hljs-keyword">var</span> id = node.getAttribute(<span class="hljs-string">"id"</span>);
+        <span class="hljs-keyword">if</span> (!id) {
+            id = <span class="hljs-string">"_"</span> + ns.generateId();
+            node.setAttribute(<span class="hljs-string">"id"</span>, id);
+        }
+
+        <span class="hljs-keyword">return</span> id;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>Native bind is too slow.
 <a href="http://jsperf.com/nativebind-vs-custombind">See</a></p>
@@ -306,11 +517,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-16">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>Create object with base object linked as prototype</p>
 
@@ -342,11 +553,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-17">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <p>check if base Object exists</p>
 
@@ -371,11 +582,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-18">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <p>Creates interface description</p>
 
@@ -405,11 +616,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-19">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <p>Checks implementation of interface of interfaces for particular object</p>
 
@@ -443,11 +654,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-20">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>Extends function by another function</p>
 
@@ -467,11 +678,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-21">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <p>Gets value from object by path</p>
 <blockquote>
@@ -495,11 +706,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-22">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <h2 id="string-functions">String Functions</h2>
 
@@ -508,11 +719,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-23">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               
             </div>
@@ -520,11 +731,11 @@ github.com/ikondrat/franky
         </li>
         
         
-        <li id="section-24">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <p>Formats string with pattern as first argument and values as other ones.</p>
 <blockquote>
@@ -536,7 +747,7 @@ res === ‘hello world’</p>
             
             <div class="content"><div class='highlight'><pre>    ns.stringf = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>pattern, <span class="hljs-comment">/**String=*/</span>value)</span> /**<span class="hljs-title">String</span>*/ </span>{
 
-        <span class="hljs-keyword">var</span> args = <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>);
+        <span class="hljs-keyword">var</span> args = ArrayProto.slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>);
 
         <span class="hljs-keyword">return</span> pattern.replace(<span class="hljs-regexp">/%s/g</span>,
             <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{ <span class="hljs-keyword">return</span> args.shift()||<span class="hljs-string">""</span>; });
@@ -548,11 +759,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-25">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <p>Replaces empty spaces from start and end of string</p>
 
@@ -581,11 +792,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p>check string is URL</p>
 
@@ -598,16 +809,54 @@ res === ‘hello world’</p>
 
             <span class="hljs-keyword">return</span> URLre.test(str);
         };
-    }());</pre></div></div>
+    }());
+
+    <span class="hljs-comment">/**
+     * Appends query parameters to specified URI
+     * @param {String} url    URI for append query
+     * @param {Object} params Query params by key:value
+     *
+     * @returns {String} URI with inserted query parameters
+     */</span>
+    ns.constructURL = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(url, params)</span> </span>{
+        <span class="hljs-keyword">var</span> res = <span class="hljs-string">""</span>,
+            query = [],
+            item,
+            items = url.match(<span class="hljs-regexp">/((?:https?\:)?(?:\/)?\/[^?]+)\?([^#]+)?(\#\S+)?/</span>),
+            hashValue = items &amp;&amp; items[<span class="hljs-number">3</span>] ? items[<span class="hljs-number">3</span>] : <span class="hljs-string">""</span>;
+
+        <span class="hljs-keyword">if</span> (items &amp;&amp; items[<span class="hljs-number">2</span>]) {
+            <span class="hljs-keyword">var</span> cquery = items[<span class="hljs-number">2</span>].split(<span class="hljs-string">"&amp;"</span>),
+                i = cquery.length;
+
+            <span class="hljs-keyword">while</span> (i--) {
+                query.push(cquery[i]);
+            }
+        }
+        <span class="hljs-keyword">for</span> (item <span class="hljs-keyword">in</span> params) {
+            <span class="hljs-keyword">if</span> (params.hasOwnProperty(item)) {
+                query.push(item + <span class="hljs-string">"="</span> + params[item]);
+            }
+        }
+
+        <span class="hljs-keyword">if</span> (items) {
+
+            res = items[<span class="hljs-number">1</span>] + <span class="hljs-string">"?"</span> + query.join(<span class="hljs-string">"&amp;"</span>) + hashValue;
+        } <span class="hljs-keyword">else</span> {
+            res = url + <span class="hljs-string">"?"</span> + query.join(<span class="hljs-string">"&amp;"</span>) + hashValue;
+        }
+
+        <span class="hljs-keyword">return</span> res;
+    };</pre></div></div>
             
         </li>
         
         
-        <li id="section-27">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <h2 id="array-functions">Array Functions</h2>
 
@@ -616,11 +865,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               
             </div>
@@ -628,11 +877,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <p>Return the results of applying the callback to array item.</p>
 
@@ -651,17 +900,17 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>Use filter pollyfill or existed function</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> arrFilter = <span class="hljs-built_in">Array</span>.prototype.filter ?
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> arrFilter = ArrayProto.filter ?
             <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
                 <span class="hljs-keyword">return</span> arr.filter(callback);
             } :
@@ -680,11 +929,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <p>Select all items that pass a truth test.</p>
 
@@ -710,17 +959,17 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>array some pollyfill</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> arrSome = <span class="hljs-built_in">Array</span>.prototype.some ?
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> arrSome = ArrayProto.some ?
             <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(arr, callback)</span> </span>{
                 <span class="hljs-keyword">return</span> arr.some(callback);
             } :
@@ -736,11 +985,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>Check if at least one item in array matches a truth test.</p>
 
@@ -767,11 +1016,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <h2 id="collection-functions">Collection Functions</h2>
 
@@ -780,11 +1029,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               
             </div>
@@ -792,11 +1041,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <p>Call function on each object item</p>
 
@@ -839,11 +1088,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <p>Iterates through every object with callback</p>
 
@@ -864,11 +1113,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <h2 id="view-module">View Module</h2>
 
@@ -877,11 +1126,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               
             </div>
@@ -889,11 +1138,11 @@ res === ‘hello world’</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>base constructor for view</p>
 <blockquote>
@@ -915,8 +1164,12 @@ var uberView = x.View(myViews)</p>
         templates: {},
 
         re: {
-            <span class="hljs-string">"parse"</span> : <span class="hljs-regexp">/{{\s+([^}]+)\s+}}/g</span>,
+            <span class="hljs-string">"parse"</span> : <span class="hljs-regexp">/\[\%\s+([^%]+)\s+\%\]/g</span>,
             <span class="hljs-string">"rule"</span>: <span class="hljs-regexp">/:/</span>
+        },
+
+        setParseRe: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(re)</span> </span>{
+            <span class="hljs-keyword">this</span>.re.parse = re;
         },
 
         getCustomRender: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
@@ -960,11 +1213,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>Get value from <code>data</code> or from described <code>views</code></p>
 
@@ -976,11 +1229,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <p>If result is still empty try to reach other resources</p>
 
@@ -991,11 +1244,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <p>first - try to walk through superTemplates</p>
 
@@ -1007,11 +1260,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-44">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               <p>or get values from described defaults in template declaration</p>
 
@@ -1031,11 +1284,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-54">&#182;</a>
               </div>
               <p>Returns processed string</p>
 
@@ -1054,11 +1307,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-46">
+        <li id="section-55">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-55">&#182;</a>
               </div>
               <p>Declares template with name</p>
 
@@ -1087,11 +1340,11 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-56">&#182;</a>
               </div>
               <p>Gets transformed value by defined template and data</p>
 
@@ -1108,16 +1361,16 @@ var uberView = x.View(myViews)</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
               <p>We have default instanced view for manipulations</p>
 <blockquote>
 <p>x.views.let(‘say’, ‘hello {{someone}}’)
-x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
+x.views.get(‘say’, {someone: “john”}) -&gt; ‘hello john’</p>
 </blockquote>
 
             </div>
@@ -1127,11 +1380,11 @@ x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
               <h2 id="component-module">Component Module</h2>
 
@@ -1140,11 +1393,11 @@ x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
               
             </div>
@@ -1156,11 +1409,11 @@ x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
               <p>Component’s base methods</p>
 
@@ -1171,74 +1424,151 @@ x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
         </li>
         
         
-        <li id="section-52">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <p>Gets data by key</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>        data: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>name)</span> /**<span class="hljs-title">String</span>*/ </span>{
-            <span class="hljs-keyword">var</span> el = <span class="hljs-keyword">this</span>.getNodeElement();
+            <span class="hljs-keyword">var</span> el = <span class="hljs-keyword">this</span>.element;
             <span class="hljs-keyword">return</span> el ? ns.data(el, name) : <span class="hljs-literal">undefined</span>;
-        },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-53">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-53">&#182;</a>
-              </div>
-              <p>Gets related DOM element</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        getNodeElement: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> /**<span class="hljs-title">Element</span>*/ </span>{
-            <span class="hljs-keyword">var</span> x1 = ns.byId(<span class="hljs-keyword">this</span>.id);
-            <span class="hljs-keyword">return</span> x1.length ? x1[<span class="hljs-number">0</span>] : x1;
         },
         setId: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(id)</span> </span>{
             <span class="hljs-keyword">this</span>.id = id;
             <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+        },
+        baseInit: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(id, element)</span> </span>{
+            <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
+            <span class="hljs-keyword">this</span>.element = element;
+            x.each(ns.dataset(element), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value, key)</span> </span>{
+                self[key] = value;
+            })
         }
     };
 
     ns.Component = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
         <span class="hljs-keyword">var</span> components = [],
+            services = [],
             componentsIndex = {},
             appAttr = <span class="hljs-string">"data-xapp"</span>;
+
         <span class="hljs-keyword">return</span> {</pre></div></div>
             
         </li>
         
         
-        <li id="section-54">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <p>Cornerstone of Component moodule - method for creating new components</p>
-<blockquote>
-<p>x.Component.extend({
- id: “test”,
- init: function () {
-     ….
- }
-})</p>
-</blockquote>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>            extend: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(componentDescription)</span> </span>{
                 <span class="hljs-keyword">var</span> i = components.length,
-                    app = x.beget(ns.ComponentBase, componentDescription);
+                    app;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>Old-school declaration</p>
+<blockquote>
+<p>x.Component.extend({
+ id: “hello”,
+ init: function () {
+     console.log(“hello”);
+ }
+});</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">if</span> (x.isObject(componentDescription)) {
+                    app = x.beget(ns.ComponentBase, componentDescription);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>Short form declaration</p>
+<blockquote>
+<p>x.Component.extend(“hello”, function () {
+     console.log(“hello”);
+});</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (x.isString(componentDescription) &amp;&amp; x.isFunc(<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>])) {
+                    app = x.beget(ns.ComponentBase, {
+                        id: componentDescription,
+                        init: <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>]
+                    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>Dependencies injection form declaration</p>
+<blockquote>
+<p>x.Component.extend(‘hello’, [‘$logger’, function ($hello) {
+     $logger.say(‘hello’);
+}]);</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (x.isString(componentDescription) &amp;&amp; x.isArray(<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>])) {
+                    <span class="hljs-keyword">var</span> args = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>];
+                    app = x.beget(ns.ComponentBase, {
+                        id: componentDescription,
+                        init: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+                            <span class="hljs-keyword">var</span> deps = ns.filter(args, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
+                                <span class="hljs-keyword">return</span> x.isString(item);
+                            });
+                            deps = x.map(deps, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(serviceName)</span> </span>{
+                                <span class="hljs-keyword">if</span> (!services[serviceName]) {
+                                    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Service "</span> + serviceName + <span class="hljs-string">" hasn't defined"</span>);
+                                }
+                                <span class="hljs-keyword">return</span> services[serviceName]();
+                            });
+                            <span class="hljs-keyword">var</span> defs = x.filter(args, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
+
+                                <span class="hljs-keyword">return</span> ns.isFunction(item);
+                            });
+                            <span class="hljs-keyword">if</span> (defs.length &gt; <span class="hljs-number">1</span>) {
+                                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Too much declaration functions"</span>);
+                            }
+                            defs[<span class="hljs-number">0</span>].apply(<span class="hljs-keyword">this</span>, deps);
+                        }
+                    });
+                } <span class="hljs-keyword">else</span> {
+                    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Unknown definition structure, try to use extend("yourName", function() { ... init code ... })'</span>);
+                }
 
                 ns.Interface.ensureImplements(app, [intComponent]);
 
@@ -1251,11 +1581,11 @@ x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
         </li>
         
         
-        <li id="section-55">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <p>fill index</p>
 
@@ -1263,16 +1593,44 @@ x.views.get(‘say’, {someone: “jhon”}) -&gt; ‘hello jhon’</p>
             
             <div class="content"><div class='highlight'><pre>                componentsIndex[app.id] = i;
                 <span class="hljs-keyword">return</span> components[i];
+
             },</pre></div></div>
             
         </li>
         
         
-        <li id="section-56">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>Declares service with name and function</p>
+<blockquote>
+<p>x.Component.factory(“ololo”, function () {
+     var api = {
+         getOlolo: function () {
+             return ‘ololo’;
+         }
+     }
+     return api;
+});</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            factory: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>name, <span class="hljs-comment">/**Function*/</span>factoryFunction)</span> </span>{
+                services[name] = factoryFunction;
+            },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <p>We can init Component module by HTML.
 E.g. <code>&lt;div data-xapp=&#39;test&#39;&gt;&lt;/div&gt;</code>
@@ -1290,140 +1648,34 @@ Then x.Component.initByHTML can be called and all assigned components are being 
             <div class="content"><div class='highlight'><pre>            <span class="hljs-string">"initByHTML"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Element*/</span>context)</span> </span>{
                 <span class="hljs-keyword">var</span> contextNode = context || <span class="hljs-built_in">document</span>,
                     self = <span class="hljs-keyword">this</span>,
-                    apps = ns.byAttr(appAttr, contextNode);
+                    apps = ns.getElementsByAttr(appAttr, contextNode);
 
                 x.each(apps, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(element)</span> </span>{
                     <span class="hljs-keyword">var</span> names = ns.data(element, <span class="hljs-string">"xapp"</span>);
                     x.each(names.split(<span class="hljs-string">" "</span>), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(appName)</span> </span>{
-                        self.initById(appName,
-                            ns.getElementId(element)
+                        self.initById(
+                            appName,
+                            ns.getElementId(element),
+                            element
                         );
                     });
                 });
             },
-
-            <span class="hljs-string">"initById"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, elementId)</span> </span>{
+            <span class="hljs-string">"initById"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, elementId, appElement)</span> </span>{
                 <span class="hljs-keyword">var</span> app = name <span class="hljs-keyword">in</span> componentsIndex ?
-                        components[componentsIndex[name]] : <span class="hljs-literal">null</span>;
+                    components[componentsIndex[name]] : <span class="hljs-literal">null</span>;
 
                 <span class="hljs-keyword">if</span> (app) {
                     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> elementId !== <span class="hljs-string">"undefined"</span>) {
                         app.setId(elementId);
                     }
+                    app.baseInit(elementId, appElement);
                     app.init(elementId);
                 }
             }
         };
 
     })();
-
-    <span class="hljs-keyword">var</span> byAttrFallback = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
-        <span class="hljs-keyword">var</span> all = <span class="hljs-built_in">document</span>.all,
-            res = [];
-
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, len = all.length; i &lt; len; ++i) {
-            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> all[i].getAttribute(attr) === <span class="hljs-string">'string'</span>) {
-                res.push(all[i]);
-            }
-        }
-
-        <span class="hljs-keyword">return</span> res;
-    };
-    ns.byAttr = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
-        <span class="hljs-keyword">var</span> contextNode = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>] || global.document || <span class="hljs-literal">null</span>;
-
-        <span class="hljs-keyword">if</span> (contextNode &amp;&amp; contextNode.querySelectorAll) {
-            <span class="hljs-keyword">try</span> {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-57">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-57">&#182;</a>
-              </div>
-              <p>safari 5: querySelectorAll returns function-like array</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.slice.call(contextNode.querySelectorAll(<span class="hljs-string">'['</span> + attr + <span class="hljs-string">']'</span>));
-            } <span class="hljs-keyword">catch</span> (e) {}
-        }
-
-        <span class="hljs-keyword">return</span> byAttrFallback(attr);
-    };
-
-    ns.byId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(id)</span> </span>{
-        <span class="hljs-keyword">var</span> contextNode = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>] || global.document || <span class="hljs-literal">null</span>;
-
-        <span class="hljs-keyword">return</span> contextNode &amp;&amp; contextNode.getElementById(id) || <span class="hljs-literal">null</span>;
-    };
-
-    <span class="hljs-keyword">var</span> ELEMENT_NODE = <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">var</span> elementCheck = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node)</span> </span>{
-        <span class="hljs-keyword">return</span> node &amp;&amp; node.nodeType === ELEMENT_NODE;
-    };
-    ns.data = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node, dataName)</span> </span>{
-        <span class="hljs-keyword">if</span> (!elementCheck(node)) {
-            ns.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
-        }
-        <span class="hljs-keyword">return</span> node.getAttribute(<span class="hljs-string">"data-"</span> + dataName);
-    };
-
-    ns.getElementId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node)</span> </span>{
-        <span class="hljs-keyword">if</span> (!elementCheck(node)) {
-            ns.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
-        }
-
-        <span class="hljs-keyword">var</span> id = node.getAttribute(<span class="hljs-string">"id"</span>);
-        <span class="hljs-keyword">if</span> (!id) {
-            id = <span class="hljs-string">"_"</span> + ns.generateId();
-            node.setAttribute(<span class="hljs-string">"id"</span>, id);
-        }
-
-        <span class="hljs-keyword">return</span> id;
-    };
-
-    <span class="hljs-comment">/**
-    * Appends query parameters to specified URI
-    * @param {String} url    URI for append query
-    * @param {Object} params Query params by key:value
-    *
-    * @returns {String} URI with inserted query parameters
-    */</span>
-    ns.constructURL = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(url, params)</span> </span>{
-        <span class="hljs-keyword">var</span> res = <span class="hljs-string">""</span>,
-            query = [],
-            item,
-            items = url.match(<span class="hljs-regexp">/((?:https?\:)?(?:\/)?\/[^?]+)\?([^#]+)?(\#\S+)?/</span>),
-            hashValue = items &amp;&amp; items[<span class="hljs-number">3</span>] ? items[<span class="hljs-number">3</span>] : <span class="hljs-string">""</span>;
-
-        <span class="hljs-keyword">if</span> (items &amp;&amp; items[<span class="hljs-number">2</span>]) {
-            <span class="hljs-keyword">var</span> cquery = items[<span class="hljs-number">2</span>].split(<span class="hljs-string">"&amp;"</span>),
-            i = cquery.length;
-
-            <span class="hljs-keyword">while</span> (i--) {
-                query.push(cquery[i]);
-            }
-        }
-        <span class="hljs-keyword">for</span> (item <span class="hljs-keyword">in</span> params) {
-            <span class="hljs-keyword">if</span> (params.hasOwnProperty(item)) {
-                query.push(item + <span class="hljs-string">"="</span> + params[item]);
-            }
-        }
-
-        <span class="hljs-keyword">if</span> (items) {
-
-            res = items[<span class="hljs-number">1</span>] + <span class="hljs-string">"?"</span> + query.join(<span class="hljs-string">"&amp;"</span>) + hashValue;
-        } <span class="hljs-keyword">else</span> {
-            res = url + <span class="hljs-string">"?"</span> + query.join(<span class="hljs-string">"&amp;"</span>) + hashValue;
-        }
-
-        <span class="hljs-keyword">return</span> res;
-    };
-
 }(xglobal, <span class="hljs-string">"x"</span>));</pre></div></div>
             
         </li>

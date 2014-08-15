@@ -55,8 +55,13 @@ var xglobal = typeof global !== "undefined" ?
         return (typeof item === "object");
     };
 
+    // Object test
+    ns.isString = function (item) /**Boolean*/ {
+        return (typeof item === "string");
+    };
+
     // Function test
-    ns.isFunc = function () /**Boolean*/ {
+    ns.isFunction = ns.isFunc = function () /**Boolean*/ {
         return ArrayProto.every.call(
             arguments,
             function(x) { return x instanceof Function;}
@@ -113,6 +118,83 @@ var xglobal = typeof global !== "undefined" ?
 
     // Report about error
     ns.error = ns.console.error;
+
+    // We may fetch all data-* values.
+    // For docFragment as `'<div data-var1="hello" data-var2="world"></div>'`
+    // >x.datatset(docFragment).var1 -> 'hello'
+    // x.datatset(docFragment).var2 -> 'world'
+    ns.dataset = function (element) {
+        var res = {};
+        if (element instanceof Element) {
+            if (element.dataset) {
+                res = element.dataset
+            } else {
+                x.each(element.attributes, function (item, key) {
+                    if (item.name.indexOf("data-") === 0) {
+                        res[item.name.substr(5)] = item.value;
+                    }
+                });
+            }
+        }
+        return res;
+    };
+
+    var getElementsByAttrFallback = function (attr) {
+        x.log("fallback");
+        var all = document.all,
+            res = [];
+
+        for (var i = 0, len = all.length; i < len; ++i) {
+            if (typeof all[i].getAttribute(attr) === 'string') {
+                res.push(all[i]);
+            }
+        }
+
+        return res;
+    };
+    ns.getElementsByAttr = function (attr) {
+        var res = [],
+            contextNode = arguments[1] || global.document || null;
+        if (contextNode.getAttribute(attr)) {
+            res.push(contextNode);
+        }
+        if (contextNode && contextNode.querySelectorAll) {
+            try {
+                // safari 5: querySelectorAll returns function-like array
+                res = res.concat(ArrayProto.slice.call(contextNode.querySelectorAll('[' + attr + ']')));
+            } catch (e) {}
+        }
+        if (!res.length) {
+            res = res.concat(getElementsByAttrFallback(attr));
+        }
+
+        return res;
+    };
+
+    var ELEMENT_NODE = 1;
+    var elementCheck = function (node) {
+        return node && node.nodeType === ELEMENT_NODE;
+    };
+    ns.data = function (node, dataName) {
+        if (!elementCheck(node)) {
+            ns.error("nodeElement expected as first argument instead of " + typeof node);
+        }
+        return node.getAttribute("data-" + dataName);
+    };
+
+    ns.getElementId = function (node) {
+        if (!elementCheck(node)) {
+            ns.error("nodeElement expected as first argument instead of " + typeof node);
+        }
+
+        var id = node.getAttribute("id");
+        if (!id) {
+            id = "_" + ns.generateId();
+            node.setAttribute("id", id);
+        }
+
+        return id;
+    };
 
     // Native bind is too slow.
     // [See](http://jsperf.com/nativebind-vs-custombind)
@@ -285,6 +367,44 @@ var xglobal = typeof global !== "undefined" ?
         };
     }());
 
+    /**
+     * Appends query parameters to specified URI
+     * @param {String} url    URI for append query
+     * @param {Object} params Query params by key:value
+     *
+     * @returns {String} URI with inserted query parameters
+     */
+    ns.constructURL = function (url, params) {
+        var res = "",
+            query = [],
+            item,
+            items = url.match(/((?:https?\:)?(?:\/)?\/[^?]+)\?([^#]+)?(\#\S+)?/),
+            hashValue = items && items[3] ? items[3] : "";
+
+        if (items && items[2]) {
+            var cquery = items[2].split("&"),
+                i = cquery.length;
+
+            while (i--) {
+                query.push(cquery[i]);
+            }
+        }
+        for (item in params) {
+            if (params.hasOwnProperty(item)) {
+                query.push(item + "=" + params[item]);
+            }
+        }
+
+        if (items) {
+
+            res = items[1] + "?" + query.join("&") + hashValue;
+        } else {
+            res = url + "?" + query.join("&") + hashValue;
+        }
+
+        return res;
+    };
+
     // Array Functions
     // --------------------
 
@@ -434,8 +554,12 @@ var xglobal = typeof global !== "undefined" ?
         templates: {},
 
         re: {
-            "parse" : /{{\s+([^}]+)\s+}}/g,
+            "parse" : /\[\%\s+([^%]+)\s+\%\]/g,
             "rule": /:/
+        },
+
+        setParseRe: function (re) {
+            this.re.parse = re;
         },
 
         getCustomRender: function () {
@@ -539,7 +663,7 @@ var xglobal = typeof global !== "undefined" ?
 
     // We have default instanced view for manipulations
     // > x.views.let('say', 'hello {{someone}}')
-    // x.views.get('say', {someone: "jhon"}) -> 'hello jhon'
+    // x.views.get('say', {someone: "john"}) -> 'hello john'
     ns.views = new ns.View();
 
     // Component Module
@@ -548,21 +672,6 @@ var xglobal = typeof global !== "undefined" ?
         ["init", "data"]
     );
 
-    ns.dataset = function (element) {
-        var res = {};
-        if (element instanceof Element) {
-            if (element.dataset) {
-                res = element.dataset
-            } else {
-                x.each(element.attributes, function (item, key) {
-                    if (item.name.indexOf("data-") === 0) {
-                        res[item.name.substr(5)] = item.value;
-                    }
-                });
-            }
-        }
-        return res;
-    };
     // Component's base methods
     ns.ComponentBase = {
         // Gets data by key
@@ -585,19 +694,65 @@ var xglobal = typeof global !== "undefined" ?
 
     ns.Component = (function () {
         var components = [],
+            services = [],
             componentsIndex = {},
             appAttr = "data-xapp";
+
         return {
             // Cornerstone of Component moodule - method for creating new components
-            // > x.Component.extend({
-            //  id: "test",
-            //  init: function () {
-            //      ....
-            //  }
-            // })
             extend: function (componentDescription) {
                 var i = components.length,
+                    app;
+
+                // Old-school declaration
+                // > x.Component.extend({
+                //  id: "hello",
+                //  init: function () {
+                //      console.log("hello");
+                //  }
+                // });
+                if (x.isObject(componentDescription)) {
                     app = x.beget(ns.ComponentBase, componentDescription);
+                // Short form declaration
+                // > x.Component.extend("hello", function () {
+                //      console.log("hello");
+                // });
+                } else if (x.isString(componentDescription) && x.isFunc(arguments[1])) {
+                    app = x.beget(ns.ComponentBase, {
+                        id: componentDescription,
+                        init: arguments[1]
+                    });
+                // Dependencies injection form declaration
+                // > x.Component.extend('hello', ['$logger', function ($hello) {
+                //      $logger.say('hello');
+                // }]);
+                } else if (x.isString(componentDescription) && x.isArray(arguments[1])) {
+                    var args = arguments[1];
+                    app = x.beget(ns.ComponentBase, {
+                        id: componentDescription,
+                        init: function () {
+                            var deps = ns.filter(args, function (item) {
+                                return x.isString(item);
+                            });
+                            deps = x.map(deps, function (serviceName) {
+                                if (!services[serviceName]) {
+                                    throw new Error("Service " + serviceName + " hasn't defined");
+                                }
+                                return services[serviceName]();
+                            });
+                            var defs = x.filter(args, function (item) {
+
+                                return ns.isFunction(item);
+                            });
+                            if (defs.length > 1) {
+                                throw new Error("Too much declaration functions");
+                            }
+                            defs[0].apply(this, deps);
+                        }
+                    });
+                } else {
+                    throw new Error('Unknown definition structure, try to use extend("yourName", function() { ... init code ... })');
+                }
 
                 ns.Interface.ensureImplements(app, [intComponent]);
 
@@ -609,6 +764,21 @@ var xglobal = typeof global !== "undefined" ?
                 // fill index
                 componentsIndex[app.id] = i;
                 return components[i];
+
+            },
+
+            // Declares service with name and function
+            // > x.Component.factory("ololo", function () {
+            //      var api = {
+            //          getOlolo: function () {
+            //              return 'ololo';
+            //          }
+            //      }
+            //      return api;
+            // });
+            factory: function (/**String*/name, /**Function*/factoryFunction) {
+                services[name] = factoryFunction;
+
             },
 
             // We can init Component module by HTML.
@@ -634,6 +804,8 @@ var xglobal = typeof global !== "undefined" ?
                         );
                     });
                 });
+
+                return this;
             },
             "initById": function (name, elementId, appElement) {
                 var app = name in componentsIndex ?
@@ -650,100 +822,4 @@ var xglobal = typeof global !== "undefined" ?
         };
 
     })();
-
-    var getElementsByAttrFallback = function (attr) {
-        x.log("fallback");
-        var all = document.all,
-            res = [];
-
-        for (var i = 0, len = all.length; i < len; ++i) {
-            if (typeof all[i].getAttribute(attr) === 'string') {
-                res.push(all[i]);
-            }
-        }
-
-        return res;
-    };
-    ns.getElementsByAttr = function (attr) {
-        var res = [],
-            contextNode = arguments[1] || global.document || null;
-        if (contextNode.getAttribute(attr)) {
-            res.push(contextNode);
-        }
-        if (contextNode && contextNode.querySelectorAll) {
-            try {
-                // safari 5: querySelectorAll returns function-like array
-                res = res.concat(ArrayProto.slice.call(contextNode.querySelectorAll('[' + attr + ']')));
-            } catch (e) {}
-        }
-        if (!res.length) {
-            res = res.concat(getElementsByAttrFallback(attr));
-        }
-
-        return res;
-    };
-
-    var ELEMENT_NODE = 1;
-    var elementCheck = function (node) {
-        return node && node.nodeType === ELEMENT_NODE;
-    };
-    ns.data = function (node, dataName) {
-        if (!elementCheck(node)) {
-            ns.error("nodeElement expected as first argument instead of " + typeof node);
-        }
-        return node.getAttribute("data-" + dataName);
-    };
-
-    ns.getElementId = function (node) {
-        if (!elementCheck(node)) {
-            ns.error("nodeElement expected as first argument instead of " + typeof node);
-        }
-
-        var id = node.getAttribute("id");
-        if (!id) {
-            id = "_" + ns.generateId();
-            node.setAttribute("id", id);
-        }
-
-        return id;
-    };
-
-    /**
-    * Appends query parameters to specified URI
-    * @param {String} url    URI for append query
-    * @param {Object} params Query params by key:value
-    *
-    * @returns {String} URI with inserted query parameters
-    */
-    ns.constructURL = function (url, params) {
-        var res = "",
-            query = [],
-            item,
-            items = url.match(/((?:https?\:)?(?:\/)?\/[^?]+)\?([^#]+)?(\#\S+)?/),
-            hashValue = items && items[3] ? items[3] : "";
-
-        if (items && items[2]) {
-            var cquery = items[2].split("&"),
-            i = cquery.length;
-
-            while (i--) {
-                query.push(cquery[i]);
-            }
-        }
-        for (item in params) {
-            if (params.hasOwnProperty(item)) {
-                query.push(item + "=" + params[item]);
-            }
-        }
-
-        if (items) {
-
-            res = items[1] + "?" + query.join("&") + hashValue;
-        } else {
-            res = url + "?" + query.join("&") + hashValue;
-        }
-
-        return res;
-    };
-
 }(xglobal, "x"));
