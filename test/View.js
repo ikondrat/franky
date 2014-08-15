@@ -4,6 +4,17 @@
     "use strict";
 
     QUnit.module('franky');
+    x.views.
+        let("helloName", "hello [% name %]");
+
+    test('helloName', function() {
+        equal(
+            x.views.get("helloName", {name: 'Mark'}),
+            "hello Mark",
+            'helloName failed'
+        );
+    });
+
     x.views.setParseRe(/{{\s+([^}]+)\s+}}/g);
 
     x.views.parseRules.test = function (key) {
