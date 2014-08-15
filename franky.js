@@ -33,6 +33,7 @@ var xglobal = typeof global !== "undefined" ?
         }
 
         return this;
+
     };
     var ArrayProto = Array.prototype;
     // Generate random value in range from 0 to specified `count`
