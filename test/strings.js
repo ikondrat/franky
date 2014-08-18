@@ -1,58 +1,58 @@
-/* global x, equal, ok, throws*/
+/* global x, QUnit*/
 /* jshint multistr: true */
-(function() {
+(function(q) {
     "use strict";
 
-    QUnit.module('franky');
+    q.module('franky');
 
-    test('trim', function() {
-        equal(
+    q.test('trim', function() {
+        q.equal(
             x.trim(" a  a "),
             "a  a"
             );
     });
 
-    test('stripSpaces', function () {
-        equal(
+    q.test('stripSpaces', function () {
+        q.equal(
             x.stripSpaces("blah     blah  blah 11"),
             "blahblahblah11"
         );
-        equal(
+        q.equal(
             x.stripSpaces(" blah    blah  "),
             "blahblah"
         );
     });
 
-    test('isURL', function () {
+    q.test('isURL', function () {
 
-        ok(
+        q.ok(
             x.isURL("http://www.yandex.ru/?s=1"),
             "http://www.yandex.ru/?s=1 must be matched as URL"
         );
 
-        ok(
+        q.ok(
             x.isURL("https://www.google.com/path/#aaa"),
             "https://www.google.com/path/#aaa must be matched as URL"
         );
 
-        ok(
+        q.ok(
             !x.isURL("12234"),
             "12234 isn't an URL at all"
         );
 
-        ok(
+        q.ok(
             !x.isURL("//ololo.org"),
             "//ololo.org isn't fully appreciated URL"
         );
 
-        throws(
+        q.throws(
             function () {
                 x.isURL({a:1});
             },
             "Only strings parameters are allowed"
         );
 
-        throws(
+        q.throws(
             function () {
                 x.isURL(function(){});
             },
@@ -60,80 +60,97 @@
         );
     });
 
-    test("test for x.constructURL", function () {
+    q.test("q.test for x.constructURL", function () {
 
-        equal(
+        q.equal(
             x.constructURL("http://www.yandex.ru", {
                 "text": 1,
                 "hello": "world"
             }),
             "http://www.yandex.ru?text=1&hello=world",
-            "OK"
+            "q.ok"
         );
 
-        equal(
+        q.equal(
             x.constructURL("http://www.google.com?", {
                 "search": "ololo",
-                "test": "ok"
+                "q.test": "q.ok"
             }),
-            "http://www.google.com?search=ololo&test=ok",
-            "OK"
+            "http://www.google.com?search=ololo&q.test=q.ok",
+            "q.ok"
         );
 
-        equal(
+        q.equal(
             x.constructURL("http://www.google.com?", {
                 "text": ""
             }),
             "http://www.google.com?text=",
-            "OK"
+            "q.ok"
         );
 
-        equal(
-            x.constructURL("http://www.yandex.com/test/?vow=test", {
+        q.equal(
+            x.constructURL("http://www.yandex.com/q.test/?vow=q.test", {
                 "search": "ololo",
-                "test": "ok"
+                "q.test": "q.ok"
             }),
-            "http://www.yandex.com/test/?vow=test&search=ololo&test=ok",
-            "OK"
+            "http://www.yandex.com/q.test/?vow=q.test&search=ololo&q.test=q.ok",
+            "q.ok"
         );
 
-        equal(
-            x.constructURL("http://www.yandex.com:5674/test/?vow=test", {
+        q.equal(
+            x.constructURL("http://www.yandex.com:5674/q.test/?vow=q.test", {
                 "search": "ololo",
-                "test": "ok"
+                "q.test": "q.ok"
             }),
-            "http://www.yandex.com:5674/test/?vow=test&search=ololo&test=ok",
-            "OK"
+            "http://www.yandex.com:5674/q.test/?vow=q.test&search=ololo&q.test=q.ok",
+            "q.ok"
         );
 
-        equal(
+        q.equal(
             x.constructURL("https://www.mail.ru?a=1#anchor", {
                 "areurobot": "yes",
                 "text": "blah"
             }),
             "https://www.mail.ru?a=1&areurobot=yes&text=blah#anchor",
-            "OK"
+            "q.ok"
         );
 
-        equal(
-            //consumer
+        q.equal(
             x.constructURL("//myhomepage.com?a=1#anchor", {
                 "areurobot": "yes",
                 "text": "blah"
             }),
             "//myhomepage.com?a=1&areurobot=yes&text=blah#anchor",
-            "OK"
+            "q.ok"
         );
 
-        equal(
-            //consumer
-            x.constructURL("/test/?a=1#anchor", {
+        q.equal(
+            x.constructURL("/q.test/?a=1#anchor", {
                 "areurobot": "yes",
                 "text": "blah"
             }),
-            "/test/?a=1&areurobot=yes&text=blah#anchor",
-            "OK"
+            "/q.test/?a=1&areurobot=yes&text=blah#anchor",
+            "q.ok"
         );
+
+        q.equal(
+            x.constructURL('/q.test/', {
+                areurobot: 'yes',
+                text: 'blah'
+            }),
+            '/q.test/?areurobot=yes&text=blah',
+            'Constructing with "/q.test/" has failed'
+        );
+
+        q.equal(
+            x.constructURL('/q.test', {
+                areurobot: 'yes',
+                text: 'blah'
+            }),
+            '/q.test?areurobot=yes&text=blah',
+            'Constructing with "/q.test" has failed'
+        );
+
     });
 
-})();
+}(QUnit));
