@@ -5,13 +5,32 @@
 
     QUnit.module('franky');
     x.views.
-        let("helloName", "hello [% name %]");
+        let("helloName", "hello [% name %]").
+        let("helloNameDef", "hello [% name %]", {
+            name: 'Karl'
+        });
 
-    test('helloName', function() {
+    test('helloName widthout data', function() {
+        equal(
+            x.views.get("helloName"),
+            "hello ",
+            'helloName widthout data failed'
+        );
+    });
+
+    test('helloName with passed data', function() {
         equal(
             x.views.get("helloName", {name: 'Mark'}),
             "hello Mark",
-            'helloName failed'
+            'helloName with passed data failed'
+        );
+    });
+
+    test('helloName with default value', function() {
+        equal(
+            x.views.get("helloNameDef"),
+            "hello Karl",
+            'helloName with default value widthout data failed'
         );
     });
 

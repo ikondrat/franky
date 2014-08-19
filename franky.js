@@ -13,7 +13,7 @@ var xglobal = typeof global !== "undefined" ?
 
     // Place defined namespace to global object - by default `x`.
     var ns = global[name] = function (smth) {},
-        isDebug = true;
+        isDebug = false;
 
     // Current version
     ns.VERSION = '1.0.1';
@@ -601,8 +601,8 @@ var xglobal = typeof global !== "undefined" ?
         ruleFunction: function (paramName, defaults, superTemplates) {
             return this.getCustomRender(paramName) || function (d) {
                 // Get value from `data` or from described `views`
-                var res = d[paramName] ||
-                    (d.views && d.views.get(paramName, d));
+                var res = d && d[paramName] ||
+                    (d && d.views && d.views.get(paramName, d)) || "";
 
                 // If result is still empty try to reach other resources
                 if (!res) {
@@ -610,7 +610,7 @@ var xglobal = typeof global !== "undefined" ?
                     res =  superTemplates[paramName] ?
                         self.getContent(superTemplates[paramName], d) :
                         // or get values from described defaults in template declaration
-                        defaults[paramName];
+                        defaults ? defaults[paramName] : "";
                 }
                 if (isDebug && !res) {
                     x.console.log(
