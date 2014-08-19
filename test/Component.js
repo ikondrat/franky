@@ -121,4 +121,35 @@
             "init by initByHTML from document failed"
         );
     });
+
+    q.test('Component: init new version with several dependencies', function() {
+        var doc = document.createElement('div'),
+            testData = "";
+
+        doc.setAttribute("data-xapp", "uberapp");
+        // define core service
+        x.Component.factory("$http", function () {
+            var publicApis = {
+                get: function(path, callback) {
+                    callback('follow the white rabbit');
+                }
+            };
+            return publicApis;
+        });
+
+        x.Component.extend("uberapp", [
+            '$storage', '$http', function ($storage, $http) {
+                $http.get("/uberpath", function (data) {
+                    testData = $storage.getTest() + " " + data;
+                });
+            }
+        ]);
+
+        x.Component.initByHTML(doc);
+        q.equal(
+            testData,
+            "test from storage follow the white rabbit",
+            "Init with several dependencies failed"
+        );
+    });
 })(QUnit);
