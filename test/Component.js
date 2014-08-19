@@ -100,35 +100,25 @@
         );
     });
 
-    q.test('Component: init new version with several dependencies', function() {
+    q.test('Component: init by initByHTML from document', function() {
         var doc = document.createElement('div'),
             testData = "";
 
-        doc.setAttribute("data-xapp", "uberapp");
-        // define core service
-        x.Component.factory("$http", function () {
-            var publicApis = {
-                get: function(path, callback) {
-                    callback('follow the white rabbit');
-                }
-            };
-            return publicApis;
-        });
+        doc.setAttribute("data-xapp", "hellozullservice2");
 
-        x.Component.extend("uberapp", [
-            '$storage', '$http', function ($storage, $http) {
-                $http.get("/uberpath", function (data) {
-                    testData = $storage.getTest() + " " + data;
-                });
+        x.Component.extend("hellozullservice2", [
+            '$storage', function ($storage) {
+                testData = $storage.getTest();
             }
         ]);
 
-        x.Component.initByHTML(doc);
+        document.body.appendChild(doc);
+        x.Component.initByHTML();
+
         q.equal(
             testData,
-            "test from storage follow the white rabbit",
-            "Init with several dependencies failed"
+            "test from storage",
+            "init by initByHTML from document failed"
         );
     });
-
 })(QUnit);

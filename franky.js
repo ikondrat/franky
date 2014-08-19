@@ -156,7 +156,7 @@ var xglobal = typeof global !== "undefined" ?
     ns.getElementsByAttr = function (attr) {
         var res = [],
             contextNode = arguments[1] || global.document || null;
-        if (contextNode.getAttribute(attr)) {
+        if ('getAttribute' in contextNode && contextNode.getAttribute(attr)) {
             res.push(contextNode);
         }
         if (contextNode && contextNode.querySelectorAll) {

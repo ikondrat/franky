@@ -12,7 +12,7 @@
 
     test('helloName widthout data', function() {
         equal(
-            x.views.get("helloName"),
+            x.views.get("helloName", {a: 1}),
             "hello ",
             'helloName widthout data failed'
         );
