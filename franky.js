@@ -422,34 +422,6 @@ var xglobal = typeof global !== "undefined" ? global : this;
             };
         },
 
-        "let": function (name, template, defaults) {
-
-            var inTemplates = name in this.templates;
-
-
-            var result = [],
-                superTmpl = name in this.templates ? this.templates[name] : null,
-                self = this,
-                i = 0;
-
-            result = this.templates[name] = superTmpl ? x.create(superTmpl) : [];
-            if (inTemplates) {
-                result._super = superTmpl;
-            }
-            template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
-                result.push(
-                    template.substr(i, matchedIndex - i),
-                    self.ruleFunction(matchedKey, defaults)
-                );
-                i = matchedIndex + matchedExpression.length;
-
-            });
-            if (i < template.length) {
-                result.push(template.substr(i));
-            }
-
-            return this;
-        },
         "get": function (name, data) {
             var template = this.templates[name],
                 res = ns.isArray(template) ?
@@ -461,6 +433,35 @@ var xglobal = typeof global !== "undefined" ? global : this;
                     template;
             return res;
         }
+    };
+
+    ns.View.prototype.let = function (name, template, defaults) {
+
+        var inTemplates = name in this.templates;
+
+
+        var result = [],
+            superTmpl = name in this.templates ? this.templates[name] : null,
+            self = this,
+            i = 0;
+
+        result = this.templates[name] = superTmpl ? x.create(superTmpl) : [];
+        if (inTemplates) {
+            result._super = superTmpl;
+        }
+        template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
+            result.push(
+                template.substr(i, matchedIndex - i),
+                self.ruleFunction(matchedKey, defaults)
+            );
+            i = matchedIndex + matchedExpression.length;
+
+        });
+        if (i < template.length) {
+            result.push(template.substr(i));
+        }
+
+        return this;
     };
 
     ns.views = new ns.View();
