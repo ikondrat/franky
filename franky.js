@@ -632,27 +632,6 @@ var xglobal = typeof global !== "undefined" ?
                 tmpl.toString();
         },
 
-        // Declares template with name
-        "let": function (/**String*/name, /**String|Function*/template, /**Object*/defaults) /**Object*/ {
-
-            var result = this.templates[name] = [],
-                self = this,
-                i = 0;
-
-            template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
-                result.push(
-                    template.substr(i, matchedIndex - i),
-                    self.ruleFunction(matchedKey, defaults, self.templates)
-                );
-                i = matchedIndex + matchedExpression.length;
-            });
-            if (i < template.length) {
-                result.push(template.substr(i));
-            }
-
-            return this;
-        },
-
         // Gets transformed value by defined template and data
         "get": function (/**String*/name, /**Object*/data) /**String*/ {
             var self = this;
@@ -660,6 +639,27 @@ var xglobal = typeof global !== "undefined" ?
                     data.views.templates[name] : this.templates[name];
             return self.getContent(template, data);
         }
+    };
+
+    // Declares template with name
+    ns.View.prototype.let = function (/**String*/name, /**String|Function*/template, /**Object*/defaults) /**Object*/ {
+
+        var result = this.templates[name] = [],
+            self = this,
+            i = 0;
+
+        template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
+            result.push(
+                template.substr(i, matchedIndex - i),
+                self.ruleFunction(matchedKey, defaults, self.templates)
+            );
+            i = matchedIndex + matchedExpression.length;
+        });
+        if (i < template.length) {
+            result.push(template.substr(i));
+        }
+
+        return this;
     };
 
     // We have default instanced view for manipulations
