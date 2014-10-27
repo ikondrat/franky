@@ -37,4 +37,19 @@
 
     });
 
+    test('x.indexOf', function () {
+        equal(
+            x.indexOf([1,2,3,4,5,6,8,9,10,11], 5),
+            4,
+            'expects 4 as resulted index'
+        );
+    });
+
+    test('x.indexOf', function () {
+        equal(
+            x.indexOf([1,2,3,4,5,6,8,9,10,11], 55),
+            -1,
+            'expects -1 for non existed elements'
+        );
+    });
 })();

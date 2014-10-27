@@ -120,21 +120,39 @@ var xglobal = typeof global !== "undefined" ?
     // Report about error
     ns.error = ns.console.error;
 
+    // Checks for element is HTMLElement
+    ns.isElement = function (/**Object*/obj) /**Boolean*/ {
+        try {
+            //Using W3 DOM2 (works for FF, Opera and Chrom)
+            return obj instanceof HTMLElement;
+        }
+        catch(e){
+            //Browsers not supporting W3 DOM2 don't have HTMLElement and
+            //an exception is thrown and we end up here. Testing some
+            //properties that all elements have. (works on IE7)
+            return (typeof obj==="object") &&
+                (obj.nodeType===1) && (typeof obj.style === "object") &&
+                (typeof obj.ownerDocument ==="object");
+        }
+    };
+
     // We may fetch all data-* values.
     // For docFragment as `'<div data-var1="hello" data-var2="world"></div>'`
     // >x.datatset(docFragment).var1 -> 'hello'
     // x.datatset(docFragment).var2 -> 'world'
-    ns.dataset = function (element) {
-        var res = {};
-        if (element instanceof Element) {
+    ns.dataset = function (/**Element*/element) /**Object*/ {
+        var res = {},
+            item;
+        if (ns.isElement(element)) {
             if (element.dataset) {
-                res = element.dataset
+                res = element.dataset;
             } else {
-                x.each(element.attributes, function (item, key) {
+                for (var i = 0; i < element.attributes.length; i++) {
+                    item = element.attributes[i];
                     if (item.name.indexOf("data-") === 0) {
                         res[item.name.substr(5)] = item.value;
                     }
-                });
+                }
             }
         }
         return res;
@@ -496,6 +514,26 @@ var xglobal = typeof global !== "undefined" ?
         };
     }());
 
+    // Dispatch for accessor [Array.indexOf](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
+    // Searches index of item in `arr` with declared `value` and from position in array setted  in `startFromIndex`, by default - 0
+    ns.indexOf = function (/**Array*/arr, /**String*/value, /**Number=0*/startFromIndex) /**Number*/{
+        startFromIndex = startFromIndex || 0;
+        if (!(arr instanceof Array)) {
+            throw new Error("Function expects array as first argument");
+        }
+        if ("indexOf" in Array.prototype) {
+            return arr.indexOf(value, startFromIndex);
+        } else {
+            for (var i = 0, l = arr.length; i < l; i++) {
+                if (arr[i] === value && i >= startFromIndex) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    };
+
     // Collection Functions
     // --------------------
 
@@ -546,6 +584,81 @@ var xglobal = typeof global !== "undefined" ?
     if (isDebug) {
         ns.ViewItem = new x.Interface("View", ["getCustomRender", "ruleFunction", "let", "get"]);
     }
+
+    var reTemplate = /\{\s([^{}]+)\s\}/g;
+    // Light template engine implementation with use of functional curring
+    // Creates template function for proccess strings
+    // @deprecated
+    ns.template = function(/**String*/tmpl, /**Object*/defaults){
+        var def = defaults || {};
+
+        var func = tmpl.replace(/'/g,"\\'").replace(reTemplate, function (a, b) {
+            if (def.hasOwnProperty(b)) {
+                return "'+(hash.hasOwnProperty(\"" + b + "\")?hash[\"" + b + "\"]:\"" +
+                    def[b] + "\")+'";
+            } else {
+                return "'+(hash.hasOwnProperty(\"" + b + "\")&&typeof(hash[\"" + b + "\"])!='undefined'?hash[\"" + b + "\"]:'')+'";
+            }
+        });
+
+        return new Function("hash", "return '" + func + "'"); // jshint ignore:line
+
+    };
+
+    // Binds function `handler` with `el` element for appropriate `event`
+    ns.on = function (/**Element=*/el, /**String*/ event, /**Function*/ handler) {
+        if (el.addEventListener) {
+            el.addEventListener(event, handler);
+        } else if (el.attachEvent) {
+            el.attachEvent("on"+event, function (e) {
+                e = e || ns.Event;
+                if(!e.preventDefault) {
+                    e.preventDefault = function () {
+                        e.returnValue = false;
+                    };
+                }
+                handler(e);
+            });
+        }
+        return this;
+    };
+
+    var delegatedEvents = {};
+
+    // Event delegation uses [delegation pattern](http://www.princeton.edu/~achaney/tmve/wiki100k/docs/Delegation_pattern.html)
+    // and delegates handling of `event` on particular `className` to `body` event handling function
+    ns.delegate = function(/**String*/className, /**String*/event, /**Function*/handler) {
+        var self = this;
+        // Bind event listener only once - if it doesn't exist for this event
+        if (!delegatedEvents[event]) {
+            delegatedEvents[event] = {};
+
+            ns.on(document.body, event, function (e) {
+                var target = e.target || e.srcElement,
+                    cln,
+                    delegateHandler = function (handler) {
+                        handler.call(self, e, target);
+                    };
+                while(target && target.className) {
+                    cln = target.className;
+
+                    if (delegatedEvents[event] && delegatedEvents[event][cln]) {
+
+                        ns.forEach(
+                            delegatedEvents[event][cln],
+                            delegateHandler
+                        );
+                    }
+
+                    target = target.parentNode;
+                }
+            });
+        }
+        if (!delegatedEvents[event][className]) {
+            delegatedEvents[event][className] = [];
+        }
+        delegatedEvents[event][className].push(handler);
+    };
 
     // View Module
     // --------------------
