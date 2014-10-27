@@ -153,4 +153,16 @@
 
     });
 
+    q.test('stringf', function() {
+        q.equal(
+            x.stringf(
+                "Lorem ipsum dolor %s, consectetur adipisicing elit%s sed do %s tempor",
+                'sit amet',
+                ',',
+                'eiusmod'
+            ),
+            "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor"
+        );
+    });
+
 }(QUnit));

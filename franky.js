@@ -320,6 +320,16 @@ var xglobal = typeof global !== "undefined" ?
         return c;
     };
 
+    // Converts object-like structures to array
+    ns.toArray = function (/**Object*/obj) /**Array*/ {
+        var res = [];
+        if (obj && ns.isArrayLike(obj)) {
+            return ArrayProto.slice.call(obj);
+        }
+
+        return res;
+    };
+
     // String Functions
     // --------------------
 
@@ -328,7 +338,7 @@ var xglobal = typeof global !== "undefined" ?
     // > res === 'hello world'
     ns.stringf = function (/**String*/pattern, /**String=*/value) /**String*/ {
 
-        var args = ArrayProto.slice.call(arguments, 1);
+        var args = ns.toArray(arguments).slice(1);
 
         return pattern.replace(/%s/g,
             function(){ return args.shift()||""; });
