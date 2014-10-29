@@ -1,115 +1,100 @@
 describe('Stuff for components', function () {
-
-});
-/* global x */
-/* jshint multistr: true */
-(function (q) {
-    "use strict";
-    var testVariable;
-
-    q.module('franky');
+    var testVariable,
+        mockd;
 
     x.Component.extend({
-        id: "aaa",
+        id: 'aaa',
         init: function () {
             testVariable = 123;
         }
     });
 
     x.Component.extend({
-        id: "yyy",
+        id: 'yyy',
         init: function () {
-            testVariable = this.data("value") || 222;
+            testVariable = this.data('value') || 222;
         }
     });
 
-    q.test('Component: custom call of init', function() {
-        x.Component.initById("aaa");
-        q.equal(
-            testVariable,
-            123,
-            "The result must be 123"
-        );
-    });
+    // initialize components
+    describe('init', function () {
 
-    q.test('Component: check init', function() {
-        var doc = document.createElement('div'),
-            testData = "";
-
-        doc.setAttribute("data-xapp", "hello");
-        doc.setAttribute("data-var1", "hello");
-        doc.setAttribute("data-var2", "world");
-
-        x.Component.extend({
-            'id': "hello",
-            'init': function () {
-                testData = this.var1 + " " + this.var2;
-            }
-        });
-        x.Component.initByHTML(doc);
-        q.equal(
-            testData,
-            "hello world",
-            "check init failed"
-        );
-    });
-
-    q.test('Component: init new version', function() {
-        var doc = document.createElement('div'),
-            testData = "";
-
-        doc.setAttribute("data-xapp", "hellozull");
-        doc.setAttribute("data-var1", "there is only");
-        doc.setAttribute("data-var2", "zuul");
-
-        x.Component.extend("hellozull", function () {
-            testData = this.var1 + " " + this.var2;
+        it('by manual call' ,function () {
+            x.Component.initById('aaa');
+            expect(testVariable).toBe(123);
         });
 
-        x.Component.initByHTML(doc);
-        q.equal(
-            testData,
-            "there is only zuul",
-            "check init failed"
-        );
+        it('by search inside document fragment' ,function () {
+
+            var doc = document.createElement('div'),
+                testData = '';
+
+            doc.setAttribute('data-xapp', 'hello');
+            doc.setAttribute('data-var1', 'hello');
+            doc.setAttribute('data-var2', 'world');
+
+            x.Component.extend({
+                'id': 'hello',
+                'init': function () {
+                    testData = this.var1 + ' ' + this.var2;
+                }
+            });
+            x.Component.initByHTML(doc);
+            expect(testData).toBe('hello world');
+        });
     });
 
-    q.test('Component: init new version with service dependency', function() {
+    // describe component as factory
+    it('has ability to describe component as factory called by init', function () {
         var doc = document.createElement('div'),
-            testData = "";
+            testData = '';
 
-        doc.setAttribute("data-xapp", "hellozullservice");
+        doc.setAttribute('data-xapp', 'hellozull');
+        doc.setAttribute('data-var1', 'there is only');
+        doc.setAttribute('data-var2', 'zuul');
+
+        // another way to describe components
+        x.Component.extend('hellozull', function () {
+            testData = this.var1 + ' ' + this.var2;
+        });
+
+        x.Component.initByHTML(doc);
+        expect(testData).toBe('there is only zuul');
+    });
+
+    // DI pattern in components
+    it('has ability to use Dependency Injection pattern', function () {
+        var doc = document.createElement('div'),
+            testData = '';
+
+        doc.setAttribute('data-xapp', 'hellozullservice');
         // define core service
-        x.Component.factory("$storage", function () {
+        x.Component.factory('$storage', function () {
             var publicApis = {
                 getTest: function() {
-                    return "test from storage";
+                    return 'test from storage';
                 }
             };
             return publicApis;
         });
 
-        x.Component.extend("hellozullservice", [
+        x.Component.extend('hellozullservice', [
             '$storage', function ($storage) {
                 testData = $storage.getTest();
             }
         ]);
-
         x.Component.initByHTML(doc);
-        q.equal(
-            testData,
-            "test from storage",
-            "check init failed"
-        );
+        expect(testData).toBe('test from storage');
     });
 
-    q.test('Component: init by initByHTML from document', function() {
+    // Init from document
+    it('is also possible to start init from document', function () {
         var doc = document.createElement('div'),
-            testData = "";
+            testData = '';
 
-        doc.setAttribute("data-xapp", "hellozullservice2");
+        doc.setAttribute('data-xapp', 'hellozullservice2');
 
-        x.Component.extend("hellozullservice2", [
+        x.Component.extend('hellozullservice2', [
             '$storage', function ($storage) {
                 testData = $storage.getTest();
             }
@@ -118,20 +103,17 @@ describe('Stuff for components', function () {
         document.body.appendChild(doc);
         x.Component.initByHTML();
 
-        q.equal(
-            testData,
-            "test from storage",
-            "init by initByHTML from document failed"
-        );
+        expect(testData).toBe('test from storage');
     });
 
-    q.test('Component: init new version with several dependencies', function() {
+    // Init with several deps in DI
+    it('is possible to require several deps in DI', function () {
         var doc = document.createElement('div'),
-            testData = "";
+            testData = '';
 
-        doc.setAttribute("data-xapp", "uberapp");
+        doc.setAttribute('data-xapp', 'uberapp');
         // define core service
-        x.Component.factory("$http", function () {
+        x.Component.factory('$http', function () {
             var publicApis = {
                 get: function(path, callback) {
                     callback('follow the white rabbit');
@@ -140,19 +122,15 @@ describe('Stuff for components', function () {
             return publicApis;
         });
 
-        x.Component.extend("uberapp", [
+        x.Component.extend('uberapp', [
             '$storage', '$http', function ($storage, $http) {
-                $http.get("/uberpath", function (data) {
-                    testData = $storage.getTest() + " " + data;
+                $http.get('/uberpath', function (data) {
+                    testData = $storage.getTest() + ' ' + data;
                 });
             }
         ]);
 
         x.Component.initByHTML(doc);
-        q.equal(
-            testData,
-            "test from storage follow the white rabbit",
-            "Init with several dependencies failed"
-        );
+        expect(testData).toBe('test from storage follow the white rabbit');
     });
-})(QUnit);
+});

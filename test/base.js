@@ -24,7 +24,7 @@ describe("Base stuff", function () {
     });
 
     // check utils
-    it("has some check utils", function () {
+    describe("check utils", function () {
         var arr = [2,3,4],
             arrLike = {},
             obj = {
@@ -33,25 +33,55 @@ describe("Base stuff", function () {
             };
         Array.prototype.push.call(arrLike, 1);
 
-        expect(x.isArray(arr)).toBe(true);
+        it("checks for array", function () {
+            expect(x.isArray(arr)).toBe(true);
+            expect(x.isArray(arrLike)).toBe(false);
+            expect(x.isArray(obj)).toBe(false);
+        });
 
-        expect(x.isArray(arrLike)).toBe(false);
+        it("checks for array like structures", function () {
+            expect(x.isArrayLike(arrLike)).toBe(true);
+            expect(x.isArrayLike(obj)).toBe(false);
+        });
 
-        expect(x.isArray(obj)).toBe(false);
+        it("checks for function", function () {
+            expect(x.isFunc(function(){})).toBe(true);
 
-        expect(x.isArrayLike(arrLike)).toBe(true);
+            expect(x.isFunc({})).toBe(false);
 
-        expect(x.isArrayLike(obj)).toBe(false);
+            expect(x.isFunc(true)).toBe(false);
 
-        expect(x.isFunc(function(){})).toBe(true);
+            expect(x.isFunc(Function.prototype.call, String.prototype.indexOf)).toBe(true);
 
-        expect(x.isFunc({})).toBe(false);
+            expect(x.isFunc(Function.prototype.call, {})).toBe(false);
+        });
 
-        expect(x.isFunc(true)).toBe(false);
+        it("checks the string for URL", function () {
 
-        expect(x.isFunc(Function.prototype.call, String.prototype.indexOf)).toBe(true);
+            expect(
+                x.isURL("http://www.yandex.ru/?s=1")
+            ).toBe(true);
 
-        expect(x.isFunc(Function.prototype.call, {})).toBe(false);
+            expect(
+                x.isURL("https://www.google.com/path/#aaa")
+            ).toBe(true);
+
+            expect(
+                x.isURL("12234")
+            ).toBe(false);
+
+            expect(
+                x.isURL("//ololo.org")
+            ).toBe(false);
+
+            expect(
+                function(){ x.isURL({a:1}); }
+            ).toThrow(new Error("isURL expects string parameter instead object"));
+
+            expect(
+                function(){ x.isURL(function(){}); }
+            ).toThrow(new Error("isURL expects string parameter instead function"));
+        });
     });
 
     // beget
@@ -123,7 +153,7 @@ describe("Base stuff", function () {
 
         expect(
             function(){ x.each([1, 2, 3, 4, 5], function (item) {})}
-        ).toThrow(new Error("Each for array is deprecated - it's better to use x.forEach"));
+        ).toThrow(new Error("Each for array is deprecated - use x.forEach"));
 
         x.each(object, function (item, key) {
             sum += this[key];
@@ -135,7 +165,7 @@ describe("Base stuff", function () {
         ).toBe(3);
 
         expect(
-            str.sort()
+            str.split("").sort().join("")
         ).toBe('ab');
     });
 });

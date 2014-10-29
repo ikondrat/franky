@@ -276,7 +276,7 @@ var xglobal = typeof global !== "undefined" ?
         this.methods = [];
         this.name = name;
 
-        x.each(methods, function (method) {
+        x.forEach(methods, function (method) {
             if (typeof method !== "string") {
                 ns.error("Interface constructor expects method "+
                     "names to be passed in as a string");
@@ -295,12 +295,12 @@ var xglobal = typeof global !== "undefined" ?
                     "parameters, but expected at least 2");
         }
 
-        x.each(interfaces, function (interfaceItem) {
+        x.forEach(interfaces, function (interfaceItem) {
             if (interfaceItem.constructor !== ns.Interface) {
                 ns.error("Function Interface.ensureImplements expects arguments two and above to be instances of Interface.");
             }
 
-            x.each(interfaceItem.methods, function (method) {
+            x.forEach(interfaceItem.methods, function (method) {
                 if (!object[method] || typeof object[method] !== "function") {
                     ns.error("Function Interface.ensureImplements: object "+
                         "does not implement the " + interfaceItem.name +
@@ -536,48 +536,29 @@ var xglobal = typeof global !== "undefined" ?
 
     // Collection Functions
     // --------------------
-
-    // Call function on each object item
-    ns.eachListItem = function (/**Array*/arr, /**Function*/callback, /**Object*/thisArg) /**Object*/{
-        var i, l;
-
-        if (thisArg) {
-            for (i = 0, l = arr.length; i < l; i++) {
-                callback.call(thisArg, arr[i], i, arr);
-            }
-        } else {
-            for (i = 0, l = arr.length; i < l; i++) {
-                callback(arr[i], i, arr);
-            }
+    // Iterates though object properties
+    ns.each = function (/**Object*/obj, /**Function*/callback, /**Object*/contextObj) /**Object*/ {
+        if (ns.isArray(obj)) {
+            throw new Error("Each for array is deprecated - use x.forEach");
         }
-        return this;
-    };
-
-    ns.eachProperty = function (obj, callback, thisArg) {
         var item;
+        contextObj = contextObj || obj;
 
-        if (thisArg) {
-            for (item in obj) {
-                if (obj.hasOwnProperty(item)) {
-                    callback.call(thisArg, obj[item], item, obj);
-                }
-            }
-        } else {
-            for (item in obj) {
-                if (obj.hasOwnProperty(item)) {
-                    callback(obj[item], item, obj);
-                }
+        for (item in obj) {
+            if (obj.hasOwnProperty(item)) {
+                callback.call(contextObj, obj[item], item, obj);
             }
         }
         return this;
     };
 
-    // Iterates through every object with callback
-    ns.each = ns.forEach = function (/**Object*/smth, /**Function*/callback, /**Object*/thisArg) /**Object*/ {
-        var targetFunction = (ns.isArray(smth) || ns.isArrayLike(smth)) ?
-            ns.eachListItem : ns.eachProperty;
-
-        targetFunction(smth, callback, thisArg);
+    // Iterates through every array item with callback
+    ns.forEach = function (/**Array*/arr, /**Function*/callback, /**Object*/contextArr) /**Object*/ {
+        var i, l;
+        contextArr = contextArr || arr;
+        for (i = 0, l = arr.length; i < l; i++) {
+            callback.call(contextArr, arr[i], i, arr);
+        }
         return this;
     };
 
@@ -918,9 +899,9 @@ var xglobal = typeof global !== "undefined" ?
                     self = this,
                     apps = ns.getElementsByAttr(appAttr, contextNode);
 
-                x.each(apps, function (element) {
+                x.forEach(apps, function (element) {
                     var names = ns.data(element, "xapp");
-                    x.each(names.split(" "), function (appName) {
+                    x.forEach(names.split(" "), function (appName) {
                         self.initById(
                             appName,
                             ns.getElementId(element),
