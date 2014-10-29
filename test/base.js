@@ -33,18 +33,18 @@ describe("Base stuff", function () {
             };
         Array.prototype.push.call(arrLike, 1);
 
-        it("checks for array", function () {
+        it("isArray", function () {
             expect(x.isArray(arr)).toBe(true);
             expect(x.isArray(arrLike)).toBe(false);
             expect(x.isArray(obj)).toBe(false);
         });
 
-        it("checks for array like structures", function () {
+        it("isArrayLike", function () {
             expect(x.isArrayLike(arrLike)).toBe(true);
             expect(x.isArrayLike(obj)).toBe(false);
         });
 
-        it("checks for function", function () {
+        it("isFunc", function () {
             expect(x.isFunc(function(){})).toBe(true);
 
             expect(x.isFunc({})).toBe(false);
@@ -56,7 +56,7 @@ describe("Base stuff", function () {
             expect(x.isFunc(Function.prototype.call, {})).toBe(false);
         });
 
-        it("checks the string for URL", function () {
+        it("isURL", function () {
 
             expect(
                 x.isURL("http://www.yandex.ru/?s=1")
