@@ -16,7 +16,7 @@
         "docco": "0.6.x",
         "karma" : ">=0.12.16",
         "karma-qunit": ">=0.1.1",
-        "karma-phantomjs-launcher": ">=0.1.4",
+        "karma-jasmine": "0.1.1",
         "karma-teamcity-reporter": ">=0.1.2",
         "uglify-js": "2.4.x"
     },
@@ -29,5 +29,38 @@
         "type": "MIT",
         "url": "https://raw.github.com/ikondrat/franky/master/LICENSE"
     }],
+    "jshintConfig": {
+        "globals": {
+            "RpsGame": true,
+            "mylib": "true",
+            "describe": true,
+            "it": true,
+            "expect": true
+        },
+        "bitwise": true,
+        "browser": true,
+        "jquery": true,
+        "node": true,
+        "camelcase": false,
+        "curly":true,
+        "eqeqeq": true,
+        "forin": true,
+        "immed": false,
+        "indent": 4,
+        "latedef": true,
+        "noarg": true,
+        "noempty": true,
+        "undef": true,
+        "unused": false,
+        "strict": false,
+        "trailing": true,
+        "maxparams": 3,
+        "maxdepth": 5,
+        "maxlen": 180,
+        "laxcomma": true,
+        "sub": true,
+        "white": false,
+        "newcap": false
+    },
     "files": ["franky.js", "franky-min.js", "LICENSE"]
 }

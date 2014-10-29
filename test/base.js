@@ -1,11 +1,7 @@
-/* global x, QUnit */
-/* jshint multistr: true */
-(function(q) {
-    "use strict";
+describe("Base stuff", function () {
 
-    q.module('franky');
-
-    test('x.dataset', function() {
+    // dataset
+    it("has facade for dataset html5 feature", function () {
         var el = document.createElement('div'),
             testData = "";
 
@@ -14,76 +10,52 @@
         el.setAttribute("data-var3", "againt");
 
         var data = x.dataset(el);
-        equal(
-            data.var1,
-            "hello"
-        );
-        equal(
-            data.var1 + " " + data.var2,
-            "hello world"
-        );
-        equal(
-            data.someUndefined,
-            undefined
-        );
+        expect(
+            data.var1
+        ).toEqual("hello");
+
+        expect(
+            data.var1 + " " + data.var2
+        ).toEqual("hello world");
+
+        expect(
+            data.someUndefined
+        ).toEqual(undefined);
     });
 
-    var arr = [2,3,4],
-        arrLike = {},
-        obj = {
-            x: 1,
-            y: 2
-        };
-    Array.prototype.push.call(arrLike, 1);
+    // check utils
+    it("has some check utils", function () {
+        var arr = [2,3,4],
+            arrLike = {},
+            obj = {
+                x: 1,
+                y: 2
+            };
+        Array.prototype.push.call(arrLike, 1);
 
-    test('isArray', function() {
-        ok(
-            x.isArray(arr),
-            "isArray with array argument must return true"
-        );
-        ok(
-            !x.isArray(arrLike),
-            "isArray with arrayLike argument must return false"
-        );
-        ok(
-            !x.isArray(obj),
-            "isArray with object argument must return false"
-        );
-        ok(
-            x.isArrayLike(arrLike),
-            "isArrayLike with arrayLike argument must return true"
-        );
-        ok(
-            !x.isArrayLike(obj),
-            "isArrayLike with arrayLike argument must return false"
-        );
-        ok(
-            !x.isArrayLike(arr),
-            "isArrayLike with array argument must return false"
-        );
+        expect(x.isArray(arr)).toBe(true);
+
+        expect(x.isArray(arrLike)).toBe(false);
+
+        expect(x.isArray(obj)).toBe(false);
+
+        expect(x.isArrayLike(arrLike)).toBe(true);
+
+        expect(x.isArrayLike(obj)).toBe(false);
+
+        expect(x.isFunc(function(){})).toBe(true);
+
+        expect(x.isFunc({})).toBe(false);
+
+        expect(x.isFunc(true)).toBe(false);
+
+        expect(x.isFunc(Function.prototype.call, String.prototype.indexOf)).toBe(true);
+
+        expect(x.isFunc(Function.prototype.call, {})).toBe(false);
     });
 
-    test('isFunc', function () {
-        ok(
-            x.isFunc(function(){}),
-            'isFunc single argument usage'
-        );
-        ok(
-            !x.isFunc({}),
-            'isFunc not a func'
-        );
-        ok(
-            !x.isFunc(true),
-            'isFunc not a func 2'
-        );
-        ok(
-            x.isFunc(Function.prototype.call, String.prototype.indexOf),
-            'isFunc multiple argument usage'
-        );
-    });
-
-    test('beget', function () {
-
+    // beget
+    it("has ability to bind objects through prototype chain with beget", function () {
         var baseObject = {
                 variable: 1,
                 str: "hello",
@@ -99,110 +71,71 @@
                 "ololo": 2
             });
 
-        ok(customObject.variable === 1 &&
-            customObject.str === "hello" &&
-            customObject.obj.test === 1,
-            "Object's variables should be available for access");
+        expect(customObject.variable).toBe(1);
+        expect(customObject.str).toBe('hello');
+        expect(customObject.obj.test).toBe(1);
 
-        ok(
-            !customObject.hasOwnProperty("variable"),
-            "Should be acceses as prototypes"
-        );
+        expect(customObject.hasOwnProperty("variable")).toBe(false);
+        expect(begetObjectX.ololo).toBe(2);
+        expect(begetObject.ololo).toBe(1);
 
-        equal(
-            begetObjectX.ololo,
-            2,
-            "ololo should be property of object"
-        );
-        equal(
-            begetObject.ololo,
-            1,
-            "ololo should be property of object"
-        );
-    });
-
-    test('beget-enumerable', function () {
         var base = {
                 property: 1
             },
             extended = x.beget(base, {
                 property2: 2
-            });
-
-        ok(!extended.propertyIsEnumerable('property'), 'base property must not be enumerable from extended object');
-        ok(Object.getPrototypeOf(extended).propertyIsEnumerable('property'), 'base property must be enumerable');
-        ok(extended.propertyIsEnumerable('property2'), 'extended property must be enumerable');
-    });
-
-    test('beget-enumerable2', function () {
-        var base = {
-                property: 1
-            },
-            extended = x.beget(base, {
+            }),
+            nextExt = x.beget(base, {
                 property: 2
             });
+        expect(extended.propertyIsEnumerable('property')).toBe(false);
+        expect(Object.getPrototypeOf(extended).propertyIsEnumerable('property')).toBe(true);
+        expect(extended.propertyIsEnumerable('property2')).toBe(true);
 
-        ok(extended.propertyIsEnumerable('property'), 'extended property must be enumerable');
-    });
+        expect(nextExt.propertyIsEnumerable('property')).toBe(true);
 
-    test('beget-fallback', function () {
         var copy = Object.create;
         Object.create = null;
 
-        var base = {
+        var baseN = {
                 property: 3,
                 property2: 4
             },
-            extended = x.beget(base, {
+            extendedN = x.beget(baseN, {
                 property2: 5,
                 property3: 6
             });
-
         try {
-            equal(extended.property, 3, 'first property');
-            equal(extended.property2, 5, 'second property');
-            equal(extended.property3, 6, 'third property');
-        } catch (e) {
-            ok(false, 'equal fail');
+            expect(extendedN.property).toBe(3);
+            expect(extendedN.property2).toBe(5);
+            expect(extendedN.property3).toBe(6);
         } finally {
             Object.create = copy;
         }
     });
 
-    test('each', function () {
+    // each
+    it("has iterator for object's properties - each", function () {
         var array = [1, 2, 3, 4, 5],
             object = {a: 1, b: 2},
             sum = 0,
             str = '';
 
-        x.each(array, function (item) {
-            sum += item;
-        });
-        equal(sum, 15, 'x.each: Simple each');
+        expect(
+            function(){ x.each([1, 2, 3, 4, 5], function (item) {})}
+        ).toThrow(new Error("Each for array is deprecated - it's better to use x.forEach"));
 
-        sum = 0;
-        x.each(array, function (item, index) {
-            sum += this[index];
-        }, array);
-        equal(sum, 15, 'x.each: Context usage');
-
-        sum = 0;
-        x.each(object, function (item) {
-            sum += item;
-        });
-        equal(sum, 3, 'x.each: Object usage');
-
-        sum = 0;
         x.each(object, function (item, key) {
             sum += this[key];
             str += key;
         }, object);
-        equal(sum, 3, 'x.each: Object usage with context');
-        ok(str === 'ab' || str === 'ba', 'x.each: Object usage keys');
-    });
 
-    test('forEach', function () {
-        equal(x.forEach, x.each, 'x.each: Alias for each');
-    });
+        expect(
+            sum
+        ).toBe(3);
 
-})(QUnit);
+        expect(
+            str.sort()
+        ).toBe('ab');
+    });
+});

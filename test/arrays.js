@@ -1,55 +1,29 @@
-/* global throws, QUnit, ok, equal, deepEqual */
-(function () {
-    'use strict';
+describe("stuff for Arrays", function () {
 
-    QUnit.module('franky');
-
-    test('x.map', function () {
-        deepEqual(
-            x.map([1,2,3,4,5], function (num) {
-                return num + 1;
-            }),
-            [2,3,4,5,6], 'x.map: expects [2,3,4,5,6]');
-
-        deepEqual(
-            x.map([], function (num) {
-                return num + 1;
-            }),
-            [], 'x.map: expects []');
-
+    it("has iterator map", function () {
+        expect(x.map([1,2,3,4,5], function (num) {
+            return num + 1;
+        })).toEqual([2,3,4,5,6]);
     });
 
-    test('x.filter', function () {
-        deepEqual(
-            x.filter([1,2,3,4,5,6,8,9,10,11], function (num) {
-                return num%2;
-            }),
-            [1,3,5,9,11], 'x.map: expects [2,4,6,8,10]');
-
+    it("has iterator filter", function () {
+        expect(x.filter([1,2,3,4,5,6,8,9,10,11], function (num) {
+            return num%2;
+        })).toEqual([1,3,5,9,11]);
     });
 
-    test('x.some', function () {
-        equal(
-            x.some([1,2,3,4,5,6,8,9,10,11], function (num) {
-                return num%2;
-            }),
-            true, 'x.map: expects true');
-
+    it('has iterator some', function () {
+        expect(x.some([1,2,3,4,5,6,8,9,10,11], function (num) {
+            return num%2;
+        })).toEqual(true);
     });
 
-    test('x.indexOf', function () {
-        equal(
-            x.indexOf([1,2,3,4,5,6,8,9,10,11], 5),
-            4,
-            'expects 4 as resulted index'
-        );
+    it('has accessor indexOf', function () {
+        expect(
+            x.indexOf([1,2,3,4,5,6,8,9,10,11], 5)
+        ).toEqual(4);
+        expect(
+            x.indexOf([1,2,3,4,5,6,8,9,10,11], 55)
+        ).toEqual(-1);
     });
-
-    test('x.indexOf', function () {
-        equal(
-            x.indexOf([1,2,3,4,5,6,8,9,10,11], 55),
-            -1,
-            'expects -1 for non existed elements'
-        );
-    });
-})();
+});

@@ -1,3 +1,6 @@
+describe('Stuff for components', function () {
+
+});
 /* global x */
 /* jshint multistr: true */
 (function (q) {
