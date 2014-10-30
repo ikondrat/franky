@@ -1,4 +1,4 @@
-describe("Base stuff", function () {
+describe("Base", function () {
 
     // dataset
     it("has facade for dataset html5 feature", function () {
@@ -24,7 +24,7 @@ describe("Base stuff", function () {
     });
 
     // check utils
-    describe("check utils", function () {
+    describe("contains check utils", function () {
         var arr = [2,3,4],
             arrLike = {},
             obj = {
@@ -44,16 +44,16 @@ describe("Base stuff", function () {
             expect(x.isArrayLike(obj)).toBe(false);
         });
 
-        it("isFunc", function () {
-            expect(x.isFunc(function(){})).toBe(true);
+        it("isFunction", function () {
+            expect(x.isFunction(function(){})).toBe(true);
 
-            expect(x.isFunc({})).toBe(false);
+            expect(x.isFunction({})).toBe(false);
 
-            expect(x.isFunc(true)).toBe(false);
+            expect(x.isFunction(true)).toBe(false);
 
-            expect(x.isFunc(Function.prototype.call, String.prototype.indexOf)).toBe(true);
+            expect(x.isFunction(Function.prototype.call, String.prototype.indexOf)).toBe(true);
 
-            expect(x.isFunc(Function.prototype.call, {})).toBe(false);
+            expect(x.isFunction(Function.prototype.call, {})).toBe(false);
         });
 
         it("isURL", function () {

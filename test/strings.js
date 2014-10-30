@@ -1,12 +1,12 @@
-describe('Stuff for strings', function () {
+describe('Strings', function () {
 
-    it('may trim strings', function () {
+    it('trim', function () {
         expect(
             x.trim(" a  a ")
         ).toBe("a  a");
     });
 
-    it('is possible to strip all spaces', function () {
+    it('stripSpaces', function () {
         expect(
             x.stripSpaces("blah     blah  blah 11")
         ).toBe("blahblahblah11");
@@ -15,7 +15,7 @@ describe('Stuff for strings', function () {
         ).toBe("blahblah");
     });
 
-    it('constructs valid URL by parameters', function () {
+    it('constructURL', function () {
 
         expect(
             x.constructURL("http://www.yandex.ru", {
@@ -107,7 +107,7 @@ describe('Stuff for strings', function () {
         );
     });
 
-    it('formats strings by patters with stringf', function () {
+    it('stringf', function () {
 
         expect(
             x.stringf(

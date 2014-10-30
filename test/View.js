@@ -1,6 +1,6 @@
-describe("Views as templates processing framework", function () {
+describe("Views", function () {
 
-    it("declares views by let method", function () {
+    it("let", function () {
         x.views.let("helloName", "hello [% name %]").
            let("helloNameDef", "hello [% name %]", {
                name: 'Karl'
@@ -19,7 +19,7 @@ describe("Views as templates processing framework", function () {
         ).toBe('hello Karl')
    });
 
-    it("has ability to change syntax rules", function () {
+    it("setParseRe", function () {
         x.views.setParseRe(/{\s+([^}]+)\s+}/g);
 
         x.views.
@@ -38,7 +38,7 @@ describe("Views as templates processing framework", function () {
         ).toBe('here is exists something for me');
     });
 
-    it("may get values from object path", function () {
+    it("jpath", function () {
         x.views.setParseRe(/{\s+([^}]+)\s+}/g);
 
         x.views.let("testJpath", "here is { jpath:x.y.z }");
@@ -54,7 +54,7 @@ describe("Views as templates processing framework", function () {
         ).toBe('here is hopla');
     });
 
-    it("understands calls for views inside templates", function () {
+    it("views call inside templates", function () {
         x.views.setParseRe(/{\s+([^}]+)\s+}/g);
 
         x.views.let("t1", "blah blah { view:t2 }").
@@ -66,7 +66,7 @@ describe("Views as templates processing framework", function () {
         ).toBe('blah blah blah blah blah blah');
     });
 
-    it("creates custom rules for template processing", function () {
+    it("parseRules extending", function () {
         x.views.parseRules.revert = function (key) {
             return function (d) {
                 return key.split('').reverse().join('');
@@ -80,7 +80,7 @@ describe("Views as templates processing framework", function () {
         ).toBe('here is gnihtemos');
     });
 
-    it("inherits views", function () {
+    it("Views inherits", function () {
         x.views.let("t1", "blah blah { view:t2 }").
             let("t2", "blah blah { view:t3 }").
             let("t3", "blah blah");
@@ -93,7 +93,7 @@ describe("Views as templates processing framework", function () {
         ).toBe('blah blah blah blah oops');
     });
 
-    it("constructs document", function () {
+    it("Example processing", function () {
         x.views.
             let('document', '{ doctype }<html{ document-attrs }><head>{ head }</head><body{ body-attrs }>{ body-content }</body></html>').
             let('head', '<title>{ title }</title>{ styles }{ scripts }').

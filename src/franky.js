@@ -1,0 +1,30 @@
+define([
+    './core',
+    './etc/beget',
+    './etc/getJPathValue',
+    './etc/getObject',
+    './etc/constructURL',
+    './etc/amd',
+    './checks/isArray',
+    './checks/isArrayLike',
+    './checks/isElement',
+    './checks/isFunction',
+    './checks/isObject',
+    './checks/isString',
+    './checks/isURL',
+    './arrays/filter',
+    './arrays/forEach',
+    './arrays/indexOf',
+    './arrays/map',
+    './arrays/some',
+    './etc/components',
+    './etc/dataset',
+    './dom/getElementId',
+    './dom/getElementsByAttr',
+    './etc/views',
+    './strings/trim',
+    './strings/stripSpaces',
+    './global'
+], function (franky) {
+    return franky;
+});

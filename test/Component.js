@@ -1,4 +1,4 @@
-describe('Stuff for components', function () {
+describe('Component', function () {
     var testVariable,
         mockd;
 
