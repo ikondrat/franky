@@ -23,7 +23,7 @@
         "grunt-cli": "0.1.13"
     },
     "scripts": {
-        "init": "npm install",
+        "init": "npm install && grunt",
         "pretest": "npm run-script init",
         "prestart": "npm run-script init",
         "test": "./node_modules/karma/bin/karma start karma.conf.js",
