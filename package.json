@@ -15,17 +15,19 @@
     "devDependencies": {
         "docco": "0.6.x",
         "karma" : ">=0.12.16",
-        "karma-qunit": ">=0.1.1",
+        "karma-phantomjs-launcher": ">=0.1.4",
         "karma-jasmine": "0.1.1",
-        "karma-teamcity-reporter": ">=0.1.2",
         "uglify-js": "2.4.x",
         "requirejs": "2.1.14",
         "grunt": "0.4.5",
         "grunt-cli": "0.1.13"
     },
     "scripts": {
+        "init": "npm install",
+        "pretest": "npm run-script init",
+        "prestart": "npm run-script init",
         "test": "./node_modules/karma/bin/karma start karma.conf.js",
-        "build": "uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js",
+        "build": "grunt && uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js",
         "doc": "docco franky.js"
     },
     "licenses": [{

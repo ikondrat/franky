@@ -1,0 +1,27 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'run-script', 'build' ]
+2 info using npm@1.4.21
+3 info using node@v0.10.29
+4 verbose node symlink /usr/local/bin/node
+5 verbose run-script [ 'prebuild', 'build', 'postbuild' ]
+6 info prebuild franky@1.0.1
+7 info build franky@1.0.1
+8 verbose unsafe-perm in lifecycle true
+9 info franky@1.0.1 Failed to exec build script
+10 error franky@1.0.1 build: `grunt && uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js`
+10 error Exit status 127
+11 error Failed at the franky@1.0.1 build script.
+11 error This is most likely a problem with the franky package,
+11 error not with npm itself.
+11 error Tell the author that this fails on your system:
+11 error     grunt && uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js
+11 error You can get their info via:
+11 error     npm owner ls franky
+11 error There is likely additional logging output above.
+12 error System Darwin 13.4.0
+13 error command "node" "/usr/local/bin/npm" "run-script" "build"
+14 error cwd /Users/kondrat/Projects/franky
+15 error node -v v0.10.29
+16 error npm -v 1.4.21
+17 error code ELIFECYCLE
+18 verbose exit [ 1, true ]
