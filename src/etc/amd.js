@@ -1,6 +1,6 @@
 define([
     "./../core"
-], function( franky ) {
+], function (franky) {
     // Register as a named AMD module
     if ( typeof define === "function" && define.amd ) {
         define( "franky", [], function() {

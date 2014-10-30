@@ -4,7 +4,6 @@ define([
     './etc/getJPathValue',
     './etc/getObject',
     './etc/constructURL',
-    './etc/amd',
     './checks/isArray',
     './checks/isArrayLike',
     './checks/isElement',
@@ -24,6 +23,7 @@ define([
     './etc/views',
     './strings/trim',
     './strings/stripSpaces',
+    './etc/amd',
     './global'
 ], function (franky) {
     return franky;
