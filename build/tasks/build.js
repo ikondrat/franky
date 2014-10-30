@@ -1,5 +1,5 @@
 /**
- * Special concat/build task to handle various jQuery build requirements
+ * Special concat/build task to handle various franky build requirements
  * Concats AMD modules, removes their definitions,
  * and includes/excludes specified modules
  */
@@ -59,8 +59,8 @@ module.exports = function( grunt ) {
 
         } else {
 
-            // Ignore jQuery's exports (the only necessary one)
-            if ( name !== "jquery" ) {
+            // Ignore franky's exports (the only necessary one)
+            if ( name !== "franky" ) {
                 contents = contents
                     .replace( /\s*return\s+[^\}]+(\}\);[^\w\}]*)$/, "$1" )
                     // Multiple exports
@@ -86,13 +86,13 @@ module.exports = function( grunt ) {
         // AMD Name
         if ( (amdName = grunt.option( "amd" )) != null && /^exports\/amd$/.test( name ) ) {
             if (amdName) {
-                grunt.log.writeln( "Naming jQuery with AMD name: " + amdName );
+                grunt.log.writeln( "Naming franky with AMD name: " + amdName );
             } else {
                 grunt.log.writeln( "AMD name now anonymous" );
             }
             // Remove the comma for anonymous defines
             contents = contents
-                .replace( /(\s*)"jquery"(\,\s*)/, amdName ? "$1\"" + amdName + "\"$2" : "" );
+                .replace( /(\s*)"franky"(\,\s*)/, amdName ? "$1\"" + amdName + "\"$2" : "" );
 
         }
         return contents;
@@ -224,7 +224,7 @@ module.exports = function( grunt ) {
             // Replace exports/global with a noop noConflict
             if ( (index = excluded.indexOf( "exports/global" )) > -1 ) {
                 config.rawText[ "exports/global" ] = "define(['../core']," +
-                    "function( jQuery ) {\njQuery.noConflict = function() {};\n});";
+                    "function( franky ) {\nfranky.noConflict = function() {};\n});";
                 excluded.splice( index, 1 );
             }
 
@@ -261,7 +261,7 @@ module.exports = function( grunt ) {
             // Turn off opt-in if necessary
             if ( !optIn ) {
                 // Overwrite the default inclusions with the explicit ones provided
-                config.rawText.jquery = "define([" +
+                config.rawText.franky = "define([" +
                     (included.length ? included.join(",") : "") +
                     "]);";
             }
