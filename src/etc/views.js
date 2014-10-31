@@ -63,6 +63,7 @@ define([
         },
 
         ruleFunction: function (paramName, defaults, superTemplates) {
+            var self = this;
             return this.getCustomRender(paramName) || function (d) {
                 // Get value from `data` or from described `views`
                 var res = d && d[paramName] ||

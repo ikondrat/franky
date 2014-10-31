@@ -11,7 +11,7 @@ define([
         function (arr, callback) {
             var res = [];
 
-            x.each(arr, function (item, i) {
+            franky.each(arr, function (item, i) {
                 if (callback(item, i, this)) {
                     res.push(item);
                 }

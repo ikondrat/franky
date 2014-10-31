@@ -21,7 +21,7 @@ define([
             this.element = element;
             franky.each(franky.dataset(element), function (value, key) {
                 self[key] = value;
-            })
+            });
         }
     };
 
