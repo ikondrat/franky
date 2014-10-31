@@ -2,7 +2,7 @@ define([
     './../core'
 ], function (franky) {
     // Extends function by another function
-    extend.extend = function (/**Function*/subClass, /**Function*/superClass) {
+    franky.extend = function (/**Function*/subClass, /**Function*/superClass) {
         var F = function () {};
         subClass.superclass = F.prototype = superClass.prototype;
         subClass.prototype = new F();
