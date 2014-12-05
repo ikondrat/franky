@@ -150,11 +150,6 @@ describe("Base", function () {
             object = {a: 1, b: 2},
             sum = 0,
             str = '';
-
-        expect(
-            function(){ x.each([1, 2, 3, 4, 5], function (item) {})}
-        ).toThrow(new Error("Each for array is deprecated - use x.forEach"));
-
         x.each(object, function (item, key) {
             sum += this[key];
             str += key;

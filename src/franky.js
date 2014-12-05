@@ -23,6 +23,7 @@ define([
     './etc/components',
     './etc/dataset',
     './etc/extend',
+    './etc/interface',
     './etc/views',
     './etc/amd',
     './global'

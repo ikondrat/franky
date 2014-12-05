@@ -3,7 +3,7 @@ define([
     './console'
 ], function( franky ) {
     // Creates interface description
-    var Interface = function (/**String*/name, /**Array*/methods) {
+    franky.Interface = function (/**String*/name, /**Array*/methods) {
         var self = this;
         if (arguments.length !== 2) {
             franky.error (
@@ -25,7 +25,7 @@ define([
     };
 
     // Checks implementation of interface of interfaces for particular object
-    Interface.ensureImplements = function (/**Object*/object, /**Array*/interfaces) /**Boolean*/ {
+    franky.Interface.ensureImplements = function (/**Object*/object, /**Array*/interfaces) /**Boolean*/ {
 
         if (arguments.length !== 2) {
             franky.error (
@@ -50,5 +50,5 @@ define([
         return true;
     };
 
-    return Interface;
+    return franky.Interface;
 });

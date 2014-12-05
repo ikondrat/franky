@@ -1,6 +1,6 @@
 define([
     '../core',
-    '../objects/each',
+    '../etc/each',
     './console'
 ], function (franky) {
 
