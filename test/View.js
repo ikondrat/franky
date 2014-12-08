@@ -16,7 +16,7 @@ describe("Views", function () {
 
         expect(
            x.views.get("helloNameDef")
-        ).toBe('hello Karl')
+        ).toBe('hello Karl');
    });
 
     it("setParseRe", function () {
@@ -81,16 +81,16 @@ describe("Views", function () {
     });
 
     it("Views inherits", function () {
-        x.views.let("t1", "blah blah { view:t2 }").
-            let("t2", "blah blah { view:t3 }").
-            let("t3", "blah blah");
+        x.views.let("t1", "Lorem ipsum { view:t2 }").
+            let("t2", "dolor sit { view:t3 }").
+            let("t3", "amet");
 
         var customViews = new x.View(x.views);
             customViews.let("t3", "oops");
 
         expect(
             customViews.get("t1", {views:customViews})
-        ).toBe('blah blah blah blah oops');
+        ).toBe('Lorem ipsum dolor sit oops');
     });
 
     it("Example processing", function () {
@@ -125,7 +125,8 @@ describe("Views", function () {
         expect(
             customViews.get("document", {views:customViews})
         ).toBe(
-            '<!DOCTYPE html><html lang="ru"><head><title>modified title</title><style>body {font-size: 1em;}</style><script>alert("hello world")</script></head><body class="b-page">Meine lieben Augustin</body></html>'
+            '<!DOCTYPE html><html lang="ru"><head><title>modified title</title>' +
+            '<style>body {font-size: 1em;}</style><script>alert("hello world")</script></head><body class="b-page">Meine lieben Augustin</body></html>'
         );
 
         var extraCustomViews = new x.View(customViews);
@@ -133,7 +134,33 @@ describe("Views", function () {
 
         expect(
             customViews.get("document", {views:extraCustomViews})
-        ).toBe('<!DOCTYPE html><html lang="ru"><head><title>uber title</title><style>body {font-size: 1em;}</style><script>alert("hello world")</script></head><body class="b-page">Meine lieben Augustin</body></html>');
+        ).toBe('<!DOCTYPE html><html lang="ru"><head><title>uber title</title><style>body {font-size: 1em;}</style>' +
+            '<script>alert("hello world")</script></head><body class="b-page">Meine lieben Augustin</body></html>');
+
+    });
+
+    it("is possible to declare templates as functions", function () {
+        x.views.
+            let("t4", function(){ return "lorem ipsum"; }).
+            let("t5", function(d) {
+                return "lorem ipsum" + d["bar"];
+            }).
+            let('t6-inner', ' sit amet').
+            let('t6', function() {
+                return ('Lorem ipsum dolor' + x.views.get('t6-inner'));
+            });
+
+        expect(
+            x.views.get('t4')
+        ).toBe('lorem ipsum');
+
+        expect(
+            x.views.get('t5', { bar : ' dolor sit'})
+        ).toBe('lorem ipsum dolor sit');
+
+        expect(
+            x.views.get('t6')
+        ).toBe('Lorem ipsum dolor sit amet');
 
     });
 });

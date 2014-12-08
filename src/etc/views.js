@@ -15,6 +15,13 @@ define([
         {};
     };
 
+    franky.isString = function(){
+        return Array.prototype.every.call(
+            arguments,
+            function(x) { return typeof x === "string";}
+        );
+    };
+
     franky.View.prototype = {
         templates: {},
 
@@ -88,13 +95,24 @@ define([
 
         // Returns processed string
         getContent: function (/**Array|Object*/tmpl, /**Object*/data) /**String*/{
-            return franky.isArray(tmpl) ?
-                franky.map(tmpl, function (item) {
+            var res= "";
+            // there are thre possible declarations array of functions, string and function
+            // array case
+            if (franky.isArray(tmpl)) {
+                res = franky.map(tmpl, function (item) {
                     return typeof item === "string" ?
                         item:
                         item(data);
-                }).join(""):
-                tmpl.toString();
+                }).join("");
+            // function case
+            } else if (franky.isFunction(tmpl)) {
+                res = tmpl(data);
+            // default string case
+            } else {
+                res = tmpl.toString();
+            }
+
+            return res;
         },
 
         // Gets transformed value by defined template and data
@@ -113,16 +131,21 @@ define([
             self = this,
             i = 0;
 
-        template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
-            result.push(
-                template.substr(i, matchedIndex - i),
-                self.ruleFunction(matchedKey, defaults, self.templates)
-            );
-            i = matchedIndex + matchedExpression.length;
-        });
-        if (i < template.length) {
-            result.push(template.substr(i));
+        if (franky.isFunction(template)) {
+            result.push(template);
+        } else {
+            template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
+                result.push(
+                    template.substr(i, matchedIndex - i),
+                    self.ruleFunction(matchedKey, defaults, self.templates)
+                );
+                i = matchedIndex + matchedExpression.length;
+            });
+            if (i < template.length) {
+                result.push(template.substr(i));
+            }
         }
+
 
         return this;
     };
