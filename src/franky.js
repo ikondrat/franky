@@ -27,6 +27,7 @@ define([
     './etc/interface',
     './etc/views',
     './etc/amd',
+    './modules/statlog',
     './global'
 ], function (franky) {
     return franky;
