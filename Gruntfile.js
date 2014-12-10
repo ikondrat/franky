@@ -33,6 +33,20 @@ module.exports = function( grunt ) {
                     sizzle: [ "css/hiddenVisibleSelectors", "effects/animatedSelector" ]
                 }
             }
+        },
+        docco: {
+            all: {
+                src: ['dist/franky.js'],
+                options: {
+                    output: 'docs/'
+                }
+            }
+        },
+        'gh-pages': {
+            options: {
+                base: 'docs'
+            },
+            src: '**/*'
         }
     });
 
@@ -42,11 +56,14 @@ module.exports = function( grunt ) {
     // Integrate jQuery specific tasks
     grunt.loadTasks( "build/tasks" );
 
+    grunt.loadNpmTasks('grunt-docco');
+
+    grunt.loadNpmTasks('grunt-gh-pages');
     //grunt.registerTask( "lint", [ "jshint", "jscs" ] );
 
     // Short list as a high frequency watch task
     //grunt.registerTask( "dev", [ "build:*:*", "lint" ] );
-    grunt.registerTask( "dev", [ "build:*:*"] );
+    grunt.registerTask( "dev", ["build:*:*","docco:*:*","gh-pages:*:*"] );
 
     // Default grunt
     // grunt.registerTask( "default", [ "jsonlint", "dev", "uglify", "dist:*", "compare_size" ] );

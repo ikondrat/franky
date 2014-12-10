@@ -1,71 +1,83 @@
 {
-    "name": "franky",
-    "description": "JavaScript's functional programming helper library.",
-    "keywords": ["util", "functional", "server", "client", "browser"],
-    "author": {
-        "name": "Kondrat Shmoylov",
-        "email": "remhag@gmail.com"
+  "name": "franky",
+  "description": "JavaScript's functional programming helper library.",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": {
+    "name": "Kondrat Shmoylov",
+    "email": "remhag@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ikondrat/franky.git"
+  },
+  "main": "franky.js",
+  "version": "1.0.1",
+  "devDependencies": {
+    "docco": "0.6.x",
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-gh-pages": "^0.9.1",
+    "karma": ">=0.12.16",
+    "karma-jasmine": "0.1.1",
+    "karma-phantomjs-launcher": ">=0.1.4",
+    "requirejs": "2.1.14",
+    "uglify-js": "2.4.x"
+  },
+  "scripts": {
+    "init": "npm install && grunt",
+    "pretest": "npm run-script init",
+    "prestart": "npm run-script init",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js",
+    "build": "grunt && uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/ikondrat/franky/master/LICENSE"
+    }
+  ],
+  "jshintConfig": {
+    "globals": {
+      "RpsGame": true,
+      "mylib": "true",
+      "describe": true,
+      "it": true,
+      "expect": true
     },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/ikondrat/franky.git"
-    },
-    "main": "franky.js",
-    "version": "1.0.1",
-    "devDependencies": {
-        "docco": "0.6.x",
-        "karma" : ">=0.12.16",
-        "karma-phantomjs-launcher": ">=0.1.4",
-        "karma-jasmine": "0.1.1",
-        "uglify-js": "2.4.x",
-        "requirejs": "2.1.14",
-        "grunt": "0.4.5",
-        "grunt-cli": "0.1.13"
-    },
-    "scripts": {
-        "init": "npm install && grunt",
-        "pretest": "npm run-script init",
-        "prestart": "npm run-script init",
-        "test": "./node_modules/karma/bin/karma start karma.conf.js",
-        "build": "grunt && uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js",
-        "doc": "docco franky.js"
-    },
-    "licenses": [{
-        "type": "MIT",
-        "url": "https://raw.github.com/ikondrat/franky/master/LICENSE"
-    }],
-    "jshintConfig": {
-        "globals": {
-            "RpsGame": true,
-            "mylib": "true",
-            "describe": true,
-            "it": true,
-            "expect": true
-        },
-        "bitwise": true,
-        "browser": true,
-        "jquery": true,
-        "node": true,
-        "camelcase": false,
-        "curly":true,
-        "eqeqeq": true,
-        "forin": true,
-        "immed": false,
-        "indent": 4,
-        "latedef": true,
-        "noarg": true,
-        "noempty": true,
-        "undef": true,
-        "unused": false,
-        "strict": false,
-        "trailing": true,
-        "maxparams": 3,
-        "maxdepth": 5,
-        "maxlen": 180,
-        "laxcomma": true,
-        "sub": true,
-        "white": false,
-        "newcap": false
-    },
-    "files": ["franky.js", "franky-min.js", "LICENSE"]
+    "bitwise": true,
+    "browser": true,
+    "jquery": true,
+    "node": true,
+    "camelcase": false,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "immed": false,
+    "indent": 4,
+    "latedef": true,
+    "noarg": true,
+    "noempty": true,
+    "undef": true,
+    "unused": false,
+    "strict": false,
+    "trailing": true,
+    "maxparams": 3,
+    "maxdepth": 5,
+    "maxlen": 180,
+    "laxcomma": true,
+    "sub": true,
+    "white": false,
+    "newcap": false
+  },
+  "files": [
+    "franky.js",
+    "franky-min.js",
+    "LICENSE"
+  ]
 }
