@@ -5,3 +5,5 @@ node_modules
 dist/
 franky-min.map
 npm-debug.log
+docs
+.grunt/
