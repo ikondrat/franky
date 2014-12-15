@@ -32,8 +32,8 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks('grunt-gh-pages');
 
     // Rule for generate documentation
-    grunt.registerTask( "doc", ["docco:*:*", "gh-pages:*:*"] );
+    grunt.registerTask( "doc", ["default", "docco:*:*", "gh-pages:*:*"] );
 
     // Default grunt
-    grunt.registerTask( "default", ["build"] );
+    grunt.registerTask( "default", ["build:*:*"] );
 };
