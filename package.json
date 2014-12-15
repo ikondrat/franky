@@ -27,7 +27,8 @@
     "karma-jasmine": "0.1.1",
     "karma-phantomjs-launcher": ">=0.1.4",
     "requirejs": "2.1.14",
-    "uglify-js": "2.4.x"
+    "uglify-js": "2.4.x",
+    "grunt-docco": "~0.3.3"
   },
   "scripts": {
     "init": "npm install && grunt",
