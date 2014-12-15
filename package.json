@@ -31,11 +31,10 @@
     "grunt-docco": "~0.3.3"
   },
   "scripts": {
-    "init": "npm install && grunt",
-    "pretest": "npm run-script init",
-    "prestart": "npm run-script init",
+    "pretest": "npm run-script build",
+    "prestart": "npm run-script build",
     "test": "./node_modules/karma/bin/karma start karma.conf.js",
-    "build": "grunt && uglifyjs franky.js -m --source-map franky-min.map -o franky-min.js"
+    "build": "npm install && grunt"
   },
   "licenses": [
     {
