@@ -63,7 +63,8 @@ module.exports = function( grunt ) {
 
     // Short list as a high frequency watch task
     //grunt.registerTask( "dev", [ "build:*:*", "lint" ] );
-    grunt.registerTask( "dev", ["build:*:*","docco:*:*","gh-pages:*:*"] );
+    //grunt.registerTask( "dev", ["build:*:*","docco:*:*","gh-pages:*:*"] );
+    grunt.registerTask( "dev", ["build:*:*"] );
 
     // Default grunt
     // grunt.registerTask( "default", [ "jsonlint", "dev", "uglify", "dist:*", "compare_size" ] );
