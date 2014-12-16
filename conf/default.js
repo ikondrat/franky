@@ -23,6 +23,7 @@ define([
     './etc/constructURL',
     './etc/components',
     './etc/dataset',
+    './etc/generateId',
     './etc/extend',
     './etc/interface',
     './etc/views',
