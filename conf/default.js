@@ -24,6 +24,7 @@ define([
     './etc/components',
     './etc/dataset',
     './etc/generateId',
+    './etc/ns',
     './etc/extend',
     './etc/interface',
     './etc/views',
