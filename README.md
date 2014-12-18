@@ -2,11 +2,7 @@
 
 Franky.js
 ======
-
 JavaScript framework for everyday usage
-
-Maybe you want to see [annotated source](http://ikondrat.github.io/franky/franky.html)
-
 
 Environments to use
 --------------------------------------
