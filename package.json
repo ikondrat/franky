@@ -33,6 +33,7 @@
   "scripts": {
     "pretest": "npm run-script build",
     "prestart": "npm run-script build",
+    "doc": "npm install && grunt doc",
     "test": "./node_modules/karma/bin/karma start karma.conf.js --log-level error",
     "build": "npm install && grunt"
   },
