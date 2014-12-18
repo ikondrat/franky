@@ -29,11 +29,11 @@ define([
                 dumpDATA = function (params) {
                     var res = [];
                     if (root) {
-                        res = JSON.stringify({
+                        res = JSON.stringify([{
                             event: params.type,
                             "parent-path": getRoot(),
                             blocks: root.children
-                        });
+                        }]);
                     }
                     return res;
                 },
