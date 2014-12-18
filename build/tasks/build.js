@@ -26,9 +26,6 @@ module.exports = function( grunt ) {
                 startFile: "src/intro.js",
                 endFile: "src/outro.js"
             },
-            paths: {
-                sizzle: "../external/sizzle/dist/sizzle"
-            },
             rawText: {},
             onBuildWrite: convert
         };
