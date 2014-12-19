@@ -4,7 +4,6 @@ define([
 ], function (franky) {
 
     var getElementsByAttrFallback = function (attr) {
-        franky.log("fallback");
         var all = document.all,
             res = [];
 
