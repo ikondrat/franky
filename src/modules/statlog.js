@@ -7,6 +7,8 @@ define([
         'statlog',
         function () {
             var root = null,
+                clckDemonHost = 'http://clck.yandex.ru/counter',
+                clckDemonPath = '/dtype=%s/session_id=%s/events=%s/*',
                 params = {
                     type: 'show',
                     root: 'testRoot',
@@ -69,8 +71,8 @@ define([
 
                 getSingleRequest : function (data) {
 
-                    return x.stringf(
-                        'http://clck.yandex.ru/counter/dtype=%s/session_id=%s/events=%s/*',
+                    return franky.stringf(
+                        clckDemonHost + clckDemonPath,
                         data.project,
                         data.showId,
                         JSON.stringify([{
@@ -182,12 +184,13 @@ define([
                     if (root) {
                         $.ajax({
                             type: "POST",
-                            url: "http://clck.yandex.ru/counter/*",
-                            data: {
-                                dtype: "clck",
-                                session_id: this.getShowID(),
-                                events: dumpDATA(params)
-                            },
+                            url: clckDemonHost,
+                            data: franky.stringf(
+                                clckDemonPath,
+                                'clck',
+                                this.getShowID(),
+                                dumpDATA(params)
+                            ),
                             success: function () {
                                 root = null;
                             }
@@ -197,5 +200,4 @@ define([
             };
         }
     );
-
 });
