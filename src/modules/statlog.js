@@ -7,8 +7,8 @@ define([
         'statlog',
         function () {
             var root = null,
-                clckDemonHost = 'http://clck.yandex.ru/counter',
-                clckDemonPath = '/dtype=%s/session_id=%s/events=%s/*',
+                clckDemonHost = 'http://clck.yandex.ru/counter/',
+                clckDemonPath = 'dtype=%s/session_id=%s/events=%s/*',
                 params = {
                     type: 'show',
                     root: 'testRoot',
