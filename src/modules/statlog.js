@@ -186,7 +186,7 @@ define([
                             type: "POST",
                             url: clckDemonHost,
                             data: franky.stringf(
-                                clckDemonPath,
+                                '/' + clckDemonPath,
                                 'clck',
                                 this.getShowID(),
                                 dumpDATA(params)
