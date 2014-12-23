@@ -17,7 +17,7 @@
     "url": "git://github.com/ikondrat/franky.git"
   },
   "main": "franky.js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "dependencies": {
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13",
