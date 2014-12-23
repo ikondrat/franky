@@ -26,6 +26,13 @@
     "karma-phantomjs-launcher": ">=0.1.4",
     "requirejs": "2.1.14"
   },
+  "directories": {
+    "doc":"./docs",
+    "lib":"./src"
+  },
+  "files": [
+    './Gruntfile.js'
+  ],
   "devDependencies": {
     "docco": "0.6.x",
     "grunt-gh-pages": "^0.9.1",
