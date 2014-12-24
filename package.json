@@ -20,17 +20,16 @@
     "url": "https://github.com/ikondrat/franky/issues"
   },
   "directories": {
-    "doc": "./doc",
-    "lib": "./lib"
+    "lib": "lib"
   },
   "files": [
-    "./lib/franky.js",
-    "./lib/franky.min.js",
-    "./lib/franky.min.map",
+    "lib/franky.js",
+    "lib/franky.min.js",
+    "lib/franky.min.map",
     "LICENSE"
   ],
   "main": "franky.js",
-  "version": "1.0.6",
+  "version": "1.0.10",
   "devDependencies": {
     "docco": "0.6.x",
     "grunt": "0.4.5",
