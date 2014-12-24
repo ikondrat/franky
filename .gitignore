@@ -2,9 +2,7 @@
 raw
 node_modules
 .idea/*
-dist/
 franky-min.map
 npm-debug.log
-docs
+doc
 .grunt/
-franky.js

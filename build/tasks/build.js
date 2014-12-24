@@ -3,7 +3,6 @@
  * Concats AMD modules, removes their definitions,
  * and includes/excludes specified modules
  */
-
 module.exports = function( grunt ) {
 
     "use strict";
@@ -15,7 +14,7 @@ module.exports = function( grunt ) {
         config = {
             baseUrl: "src",
             name: "franky",
-            out: "dist/franky.js",
+            out: "lib/franky.js",
             // We have multiple minify steps
             optimize: "none",
             // Include dependencies loaded with require
@@ -47,13 +46,6 @@ module.exports = function( grunt ) {
             contents = contents
                 .replace( /define\([\w\W]*?return/, "var " + (/var\/([\w-]+)/.exec(name)[1]) + " =" )
                 .replace( rdefineEnd, "" );
-
-            // Sizzle treatment
-        } else if ( /^sizzle$/.test( name ) ) {
-            contents = "var Sizzle =\n" + contents
-                // Remove EXPOSE lines from Sizzle
-                .replace( /\/\/\s*EXPOSE[\w\W]*\/\/\s*EXPOSE/, "return Sizzle;" );
-
         } else {
 
             // Ignore franky's exports (the only necessary one)
@@ -272,21 +264,4 @@ module.exports = function( grunt ) {
                 done( err );
             });
         });
-
-    // Special "alias" task to make custom build creation less grawlix-y
-    // Translation example
-    //
-    //   grunt custom:+ajax,-dimensions,-effects,-offset
-    //
-    // Becomes:
-    //
-    //   grunt build:*:*:+ajax:-dimensions:-effects:-offset
-    grunt.registerTask( "custom", function() {
-        var args = this.args,
-            modules = args.length ? args[ 0 ].replace( /,/g, ":" ) : "";
-
-        grunt.log.writeln( "Creating custom build...\n" );
-
-        grunt.task.run([ "build:*:*" + (modules ? ":" + modules : ""), "uglify", "dist" ]);
-    });
 };
