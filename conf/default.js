@@ -29,7 +29,7 @@ define([
     './etc/interface',
     './etc/views',
     './etc/amd',
-    './modules/statlog',
+    './etc/debounce',
     './global'
 ], function (franky) {
     return franky;
