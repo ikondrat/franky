@@ -12,6 +12,19 @@
     "name": "Kondrat Shmoylov",
     "email": "remhag@gmail.com"
   },
+  "contrubutors": [{
+    "name": "hamo_sapience",
+    "email": "aisseday@gmail.com"
+  },{
+    "name": "insane-developer",
+    "email": "insanedeveloper@ya.ru"
+  },{
+    "name": "ikarev",
+    "email": "newbfg@gmail.com"
+  },{
+    "name": "4eb0da",
+    "email": "4eb0da@yandex-team.ru"
+  }],
   "repository": {
     "type": "git",
     "url": "git://github.com/ikondrat/franky.git"
