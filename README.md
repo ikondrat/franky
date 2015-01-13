@@ -38,7 +38,9 @@ cd franky && npm run build
 The built version of franky will be put in the `lib/` subdirectory.
 
 ### Modules
-The default configuration file `conf/default.js` will be used due build process. You may have another list or required modules for build.
+The default configuration file `conf/default.js` will be used due build process.
+Mind what it is linked as `src/franky.js`.
+You may have another list or required modules for build.
 
 Running the Unit Tests
 --------------------------------------
