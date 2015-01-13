@@ -39,8 +39,11 @@ The built version of franky will be put in the `lib/` subdirectory.
 
 ### Modules
 The default configuration file `conf/default.js` will be used due build process.
+
 Mind what it is linked as `src/franky.js`.
-You may have another list or required modules for build.
+
+You may have another list of modules to build.
+For what case change link `src/franky.js` to your modified configuration file and run `npm run build`
 
 Running the Unit Tests
 --------------------------------------
