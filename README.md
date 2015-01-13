@@ -7,8 +7,7 @@ JavaScript framework for everyday usage
 Environments to use
 --------------------------------------
 Franky is isomorphic JavaScript library.
-It may on server side with a help of any javascript engine or
-on client side
+It may be executed on server side with a help of any javascript engine or on client side in browser
 
 
 Requirements to build Franky
@@ -36,7 +35,7 @@ Enter the franky directory and run the build script:
 cd franky && npm run build
 ```
 
-The built version of franky will be put in the `dist/` subdirectory.
+The built version of franky will be put in the `lib/` subdirectory.
 
 ### Modules
 The default configuration file `conf/default.js` will be used due build process. You may have another list or required modules for build.
