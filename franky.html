@@ -31,14 +31,14 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*!
- * Franky JavaScript Library v1.0.1
+ * Franky JavaScript Library v1.0.12
  *
  * (c) 2013-2014 Kondrat Shmoylov
  * Franky may be freely distributed under the MIT license.
  * For all details and documentation:
  * github.com/ikondrat/franky
  *
- * Date: 2014-12-10T16:05Z
+ * Date: 2015-01-28T13:03Z
  */</span>
 
 (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(global, factory)</span> </span>{
@@ -65,7 +65,7 @@
             <div class="content"><div class='highlight'><pre>}(<span class="hljs-keyword">typeof</span> global !== <span class="hljs-string">"undefined"</span> ? global : <span class="hljs-keyword">this</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( global )</span> </span>{
     <span class="hljs-keyword">var</span> franky = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{};
     
-    franky.version = <span class="hljs-string">"1.0.1"</span>;
+    franky.version = <span class="hljs-string">"1.0.12"</span>;
     franky.isDebug = <span class="hljs-literal">false</span>;</pre></div></div>
             
         </li>
@@ -696,7 +696,6 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
 
 
     <span class="hljs-keyword">var</span> getElementsByAttrFallback = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(attr)</span> </span>{
-        franky.log(<span class="hljs-string">"fallback"</span>);
         <span class="hljs-keyword">var</span> all = <span class="hljs-built_in">document</span>.all,
             res = [];
 
@@ -1193,6 +1192,28 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
             }
         }
         <span class="hljs-keyword">return</span> res;
+    };
+
+
+    <span class="hljs-comment">/**
+     * Generates random number 
+     * @return {String} random number
+     */</span>
+    franky.generateId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">String</span>(<span class="hljs-built_in">Math</span>.random()).substr(<span class="hljs-number">2</span>);
+    };
+
+
+    franky.ns = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(self, namespace, callbackOnNs)</span> </span>{
+        <span class="hljs-keyword">if</span> (!self[namespace]) {
+            self[namespace] = {};
+        }
+
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> callbackOnNs !== <span class="hljs-string">"undefined"</span>) {
+            callbackOnNs.call(self[namespace]);
+        }
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
     };</pre></div></div>
             
         </li>
@@ -1813,48 +1834,7 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
                 func.apply(context, args);
             }
         };
-    };
-
-
-
-    franky.amd.define(
-        <span class="hljs-string">'statlog'</span>,
-        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-            <span class="hljs-keyword">var</span> root = <span class="hljs-literal">null</span>,
-                params = {
-                    type: <span class="hljs-string">'show'</span>,
-                    root: <span class="hljs-string">'testRoot'</span>,
-                    statDataAttr: <span class="hljs-string">'statlog'</span>,
-                    dataNoRedirKey: <span class="hljs-string">'statlog-noredir'</span>,
-                    doc: <span class="hljs-literal">null</span>,
-                    sendAtWill: <span class="hljs-literal">true</span>,
-                    dataReadyKey: <span class="hljs-string">'statlog-ready'</span>,
-                    clickEvent: <span class="hljs-string">'mousedown'</span>,
-                    skipVisibleCheck: <span class="hljs-literal">false</span>,
-                    statEnabled: <span class="hljs-literal">false</span>,
-                    clickCounter: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(path, element)</span> </span>{
-                        element = element || <span class="hljs-literal">null</span>;
-                        <span class="hljs-built_in">window</span>.cp(getRoot() + <span class="hljs-string">'.'</span> + path, element);
-                    }
-                },
-                getRoot = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> Lego !== <span class="hljs-string">'undefined'</span> &amp;&amp; Lego.params &amp;&amp; Lego.params.statRoot ? Lego.params.statRoot : params.root;
-                },
-                dumpDATA = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(params)</span> </span>{
-                    <span class="hljs-keyword">var</span> res = [];
-                    <span class="hljs-keyword">if</span> (root) {
-                        res = <span class="hljs-built_in">JSON</span>.stringify({
-                            event: params.type,
-                            <span class="hljs-string">"parent-path"</span>: getRoot(),
-                            blocks: root.children
-                        });
-                    }
-                    <span class="hljs-keyword">return</span> res;
-                },
-                isEnabled = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> Lego !== <span class="hljs-string">'undefined'</span> &amp;&amp; Lego.params ? Lego.params.statEnabled  : params.statEnabled;
-                },
-                handleClicks = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
+    };</pre></div></div>
             
         </li>
         
@@ -1864,362 +1844,6 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-72">&#182;</a>
-              </div>
-              <p>используем делегирование для обработки клика</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                    $(params.doc || <span class="hljs-built_in">document</span>).on(params.clickEvent, <span class="hljs-string">"*[data-"</span> + params.statDataAttr + <span class="hljs-string">"]"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(e)</span> </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-73">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-73">&#182;</a>
-              </div>
-              <p>считаем клики только когда пользователь попадает в выборку</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                        <span class="hljs-keyword">if</span> (isEnabled()) {
-                            <span class="hljs-keyword">var</span> clickPath = $(<span class="hljs-keyword">this</span>).data(params.statDataAttr),
-                                notRedirect = $(<span class="hljs-keyword">this</span>).data(params.dataNoRedirKey);
-
-                            <span class="hljs-keyword">if</span> (clickPath) {
-                                params.clickCounter(clickPath, notRedirect ? <span class="hljs-literal">null</span> : <span class="hljs-keyword">this</span>);
-
-                                <span class="hljs-keyword">if</span> (notRedirect) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }
-                            }
-                        }
-
-                    });
-                };
-
-            handleClicks();
-
-            <span class="hljs-keyword">return</span> {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-74">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
-              </div>
-              <p>Для того, чтобы сторонние компоненты могли смотреть на настройки - рассказываем о них в инстансе</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                params: params,
-
-                getSingleRequest : <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
-
-                    <span class="hljs-keyword">return</span> x.stringf(
-                        <span class="hljs-string">'http://clck.yandex.ru/counter/dtype=%s/session_id=%s/events=%s/*'</span>,
-                        data.project,
-                        data.showId,
-                        <span class="hljs-built_in">JSON</span>.stringify([{
-                            <span class="hljs-string">"event"</span>: data.event,
-                            <span class="hljs-string">"parent-path"</span>: data.path.substr(<span class="hljs-number">0</span>, data.path.lastIndexOf(<span class="hljs-string">'.'</span>)),
-                            <span class="hljs-string">"blocks"</span>: [{
-                                ctag: data.path.substr(data.path.lastIndexOf(<span class="hljs-string">'.'</span>) + <span class="hljs-number">1</span>)
-                            }]
-                        }])
-                    );
-                },
-                singleLog: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(statPath)</span> </span>{
-                    <span class="hljs-keyword">var</span> url = <span class="hljs-keyword">this</span>.getSingleRequest({
-                        project: <span class="hljs-string">'clck'</span>,
-                        showId: <span class="hljs-keyword">this</span>.getShowID(),
-                        event: <span class="hljs-string">'show'</span>,
-                        path: getRoot() + <span class="hljs-string">'.'</span> + statPath
-                    });
-                    <span class="hljs-keyword">var</span> img = <span class="hljs-keyword">new</span> Image();
-                    img.src = url;
-                },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-75">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-75">&#182;</a>
-              </div>
-              <p>Балковое логирование с использованием CORS</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                bulkLog: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>statPath)</span> /**<span class="hljs-title">Object</span>*/ </span>{
-                    <span class="hljs-keyword">var</span> current = root ? root : root = {},
-                        self = <span class="hljs-keyword">this</span>;
-
-                    franky.forEach(statPath.split(<span class="hljs-string">'.'</span>), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(key)</span> </span>{
-                        <span class="hljs-keyword">var</span> existFunction = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(child)</span> </span>{
-                            <span class="hljs-keyword">return</span> child.ctag === key;
-                        };
-                        <span class="hljs-keyword">if</span> (!current.children) {
-                            current.children = [];
-                        }
-
-                        <span class="hljs-keyword">var</span> tryToGet = franky.filter(current.children, existFunction);
-                        <span class="hljs-keyword">if</span> (!tryToGet.length) {
-                            current.children.push({
-                                ctag: key
-                            });
-                        }
-                        current = franky.filter(current.children, existFunction)[<span class="hljs-number">0</span>];
-                    });
-
-                    <span class="hljs-keyword">if</span> (params.sendAtWill) {
-                        self.send();
-                    }
-                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
-                },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-76">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-76">&#182;</a>
-              </div>
-              <p>Логирование счетчика с заданным путем в виде аргумента
-e.g. statlog.add(‘v12.head.login’).</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                log: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(statPath)</span> </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-77">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-77">&#182;</a>
-              </div>
-              <p>Для браузеров не поддерживающих балковое логирование в виде CORS запроса используем одиночные запросы</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">var</span> logFunc = $.support.cors ? <span class="hljs-keyword">this</span>.bulkLog : <span class="hljs-keyword">this</span>.singleLog;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-78">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-78">&#182;</a>
-              </div>
-              <p>проверяем наличие пути к статистике и флаг логирования</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> statPath !== <span class="hljs-string">'undefined'</span> &amp;&amp; isEnabled()) {
-                        <span class="hljs-keyword">return</span> logFunc.call(<span class="hljs-keyword">this</span>, statPath);
-                    }
-                },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-79">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-79">&#182;</a>
-              </div>
-              <p>добавление счетчиков по результат парсинга куска DOM</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                logByDocument: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Object*/</span>p)</span> </span>{
-
-                    <span class="hljs-keyword">var</span> _params = franky.beget(params, p),
-                        self = <span class="hljs-keyword">this</span>,
-                        attrName = <span class="hljs-string">'data-'</span> + _params.statDataAttr,
-                        dataKey = attrName.substr(<span class="hljs-number">5</span>),
-                        dataNoRedirKey = dataKey + <span class="hljs-string">'-noredir'</span>,
-                        exp =  <span class="hljs-string">"*["</span>+attrName+<span class="hljs-string">"]"</span>,
-                        l = _params.doc ? $(_params.doc).find(exp) : $(exp);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-80">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-80">&#182;</a>
-              </div>
-              <p>обходим все элементы с data-statlog - считаем их ‘элементами’ для обсчета статистикой</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                    $(l).each(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-81">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-81">&#182;</a>
-              </div>
-              <p>проверяем состояние видимости элемента</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                        <span class="hljs-keyword">if</span> ($(<span class="hljs-keyword">this</span>).is(<span class="hljs-string">':visible'</span>) || _params.skipVisibleCheck) {
-                            <span class="hljs-keyword">if</span> (!attrName.match(<span class="hljs-regexp">/^data-/</span>)) {
-                                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"data attribute expected as statAttr"</span>);
-                            }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-82">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-82">&#182;</a>
-              </div>
-              <p>забираем путь к счетчику, считая что это дата-атрибут</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                            <span class="hljs-keyword">var</span> dataPath = $(<span class="hljs-keyword">this</span>).data(dataKey);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-83">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-83">&#182;</a>
-              </div>
-              <p>Чтобы не считать элемент несколько раз - используем специальный флаг</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                            <span class="hljs-keyword">if</span> (!$(<span class="hljs-keyword">this</span>).data(_params.dataReadyKey)) {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-84">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-84">&#182;</a>
-              </div>
-              <p>складываем в хранилище логера</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
-                                self.log(dataPath);
-                                $(<span class="hljs-keyword">this</span>).data(_params.dataReadyKey, dataPath);
-                            }
-
-                        }
-                    });
-                },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-85">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-85">&#182;</a>
-              </div>
-              <p>дамп залогированных счетчиков</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                dumpDATA: dumpDATA,</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-86">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-86">&#182;</a>
-              </div>
-              <p>Returns showID as string</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                getShowID: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> /**<span class="hljs-title">String</span>*/ </span>{
-                    <span class="hljs-keyword">var</span> res = <span class="hljs-string">""</span>;
-                    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Lego !== <span class="hljs-string">'undefined'</span> &amp;&amp; Lego.params &amp;&amp; Lego.params.msid) {
-                        res = Lego.params.msid;
-                    }
-                    <span class="hljs-keyword">return</span> res;
-                },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-87">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-87">&#182;</a>
-              </div>
-              <p>Отправка запроса в статистику</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                send: franky.debounce(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-                    <span class="hljs-keyword">if</span> (root) {
-                        $.ajax({
-                            type: <span class="hljs-string">"POST"</span>,
-                            url: <span class="hljs-string">"http://clck.yandex.ru/counter/*"</span>,
-                            data: {
-                                dtype: <span class="hljs-string">"clck"</span>,
-                                session_id: <span class="hljs-keyword">this</span>.getShowID(),
-                                events: dumpDATA(params)
-                            },
-                            success: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-                                root = <span class="hljs-literal">null</span>;
-                            }
-                        });
-                    }
-                }, <span class="hljs-number">1000</span>)
-            };
-        }
-    );</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-88">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-88">&#182;</a>
               </div>
               <p>Register as a named AMD module</p>
 
