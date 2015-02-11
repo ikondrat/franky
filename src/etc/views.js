@@ -154,4 +154,26 @@ define([
     // > franky.views.let('say', 'hello {{someone}}')
     // franky.views.get('say', {someone: "john"}) -> 'hello john'
     franky.views = new franky.View();
+    
+    /**
+     * Creates a set of views for each lang
+     * @param langs {array}
+     * @param views {object} a set of base views for each lang in langs
+     */
+    franky.getViewsForLangs = function getViewsForLangs(/**Array*/langs, /**Object*/views) /**Object*/ {
+        var res = {},
+            x = this;
+        langs.forEach(function createView(lang){
+            var base;
+            if(views){
+                if(lang in views){
+                    base = views[lang];
+                }else{
+                    throw new Error('No lang "' + lang + '" in base views.');
+                }
+            }
+            res[lang] = new x.View(base);
+        });
+        return res;
+    };
 });

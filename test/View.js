@@ -163,4 +163,20 @@ describe("Views", function () {
         ).toBe('Lorem ipsum dolor sit amet');
 
     });
+    
+    it("creates a set of views for langs", function(){
+        var base = x.getViewsForLangs(['ru','en']),
+            views = x.getViewsForLangs(['ru','en'], base);
+        
+        base.ru.let('t0', 'base ru');
+        base.en.let('t0', 'base en');
+        views.ru.let('t1', 'views ru');
+        views.en.let('t1', 'views en');
+        
+        expect(views.ru.get('t0')).toBe('base ru');
+        expect(views.en.get('t0')).toBe('base en');
+        expect(views.ru.get('t1')).toBe('views ru');
+        expect(views.en.get('t1')).toBe('views en');
+        
+    });
 });
