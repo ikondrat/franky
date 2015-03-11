@@ -29,6 +29,7 @@ define([
     './etc/interface',
     './etc/views',
     './etc/amd',
+    './objects/bind',
     './etc/debounce',
     './global'
 ], function (franky) {
