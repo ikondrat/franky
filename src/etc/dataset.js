@@ -10,7 +10,7 @@ define([
     franky.dataset = function (/**Element*/element) /**Object*/ {
         var res = {};
         if (franky.isElement(element)) {
-            if (element.dataset) {
+            if (element.dataset && 'hasOwnProperty' in element.dataset && franky.isFunction(element.dataset.hasOwnProperty)) {
                 res = element.dataset;
             } else {
                 franky.forEach(element.attributes, function (item) {
