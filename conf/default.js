@@ -1,5 +1,6 @@
 define([
     './core',
+    './ds/Set.js',
     './checks/isArray',
     './checks/isArrayLike',
     './checks/isElement',
