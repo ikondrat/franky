@@ -31,7 +31,8 @@ define([
     './etc/amd',
     './objects/bind',
     './etc/debounce',
-    './ds/Set.js',
+    './ds/Set',
+    './etc/range',
     './global'
 ], function (franky) {
     return franky;
