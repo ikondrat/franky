@@ -1,18 +1,12 @@
 define([
     "../core"
 ], function (franky) {
-    // Generates loops from range expression
+    // Generates callbacks by range
     // E.g. range of callbacks with values from 0 to 999
     // > var res = franky.range('...1000', function (index) {
     // >     console.log(index);
     // > });
-    // It's also possible to define from to range
-    // E.g. from 10 to 19
-    // > var res = franky.range('10...20', function (index) {
-    // >     console.log(index);
-    // > });
     franky.range = function (/**String*/exp, /**Function*/callback) {
-        // three possibilities "...Integer" || "Integer...Integer"
         var parts = exp.split("..."),
             first = 0,
             last = 0;
