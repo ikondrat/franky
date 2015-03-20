@@ -31,14 +31,14 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*!
- * Franky JavaScript Library v1.0.12
+ * Franky JavaScript Library v1.0.16
  *
  * (c) 2013-2014 Kondrat Shmoylov
  * Franky may be freely distributed under the MIT license.
  * For all details and documentation:
  * github.com/ikondrat/franky
  *
- * Date: 2015-01-28T13:03Z
+ * Date: 2015-03-20T16:17Z
  */</span>
 
 (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(global, factory)</span> </span>{
@@ -65,7 +65,7 @@
             <div class="content"><div class='highlight'><pre>}(<span class="hljs-keyword">typeof</span> global !== <span class="hljs-string">"undefined"</span> ? global : <span class="hljs-keyword">this</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( global )</span> </span>{
     <span class="hljs-keyword">var</span> franky = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{};
     
-    franky.version = <span class="hljs-string">"1.0.12"</span>;
+    franky.version = <span class="hljs-string">"1.0.16"</span>;
     franky.isDebug = <span class="hljs-literal">false</span>;</pre></div></div>
             
         </li>
@@ -1181,7 +1181,7 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
             <div class="content"><div class='highlight'><pre>    franky.dataset = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Element*/</span>element)</span> /**<span class="hljs-title">Object</span>*/ </span>{
         <span class="hljs-keyword">var</span> res = {};
         <span class="hljs-keyword">if</span> (franky.isElement(element)) {
-            <span class="hljs-keyword">if</span> (element.dataset) {
+            <span class="hljs-keyword">if</span> (element.dataset &amp;&amp; <span class="hljs-string">'hasOwnProperty'</span> <span class="hljs-keyword">in</span> element.dataset &amp;&amp; franky.isFunction(element.dataset.hasOwnProperty)) {
                 res = element.dataset;
             } <span class="hljs-keyword">else</span> {
                 franky.forEach(element.attributes, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
@@ -1640,7 +1640,29 @@ franky.views.get(‘say’, {someone: “john”}) -&gt; ‘hello john’</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    franky.views = <span class="hljs-keyword">new</span> franky.View();</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    franky.views = <span class="hljs-keyword">new</span> franky.View();
+    
+    <span class="hljs-comment">/**
+     * Creates a set of views for each lang
+     * @param langs {array}
+     * @param views {object} a set of base views for each lang in langs
+     */</span>
+    franky.getViewsForLangs = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getViewsForLangs</span><span class="hljs-params">(<span class="hljs-comment">/**Array*/</span>langs, <span class="hljs-comment">/**Object*/</span>views)</span> /**<span class="hljs-title">Object</span>*/ </span>{
+        <span class="hljs-keyword">var</span> res = {},
+            x = <span class="hljs-keyword">this</span>;
+        langs.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createView</span><span class="hljs-params">(lang)</span></span>{
+            <span class="hljs-keyword">var</span> base;
+            <span class="hljs-keyword">if</span>(views){
+                <span class="hljs-keyword">if</span>(lang <span class="hljs-keyword">in</span> views){
+                    base = views[lang];
+                }<span class="hljs-keyword">else</span>{
+                    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'No lang "'</span> + lang + <span class="hljs-string">'" in base views.'</span>);
+                }
+            }
+            res[lang] = <span class="hljs-keyword">new</span> x.View(base);
+        });
+        <span class="hljs-keyword">return</span> res;
+    };</pre></div></div>
             
         </li>
         
@@ -1812,6 +1834,26 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
+              <p>Native bind is too slow.
+<a href="http://jsperf.com/nativebind-vs-custombind">See</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    franky.bind = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(func, context)</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">return</span> func.apply(context, <span class="hljs-built_in">arguments</span>);
+        };
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
               <p>Возвращает “обесшумленную функцию”. Функция будет вызвана после последнего вызова через объявленный таймаут.
 Если задан флаг <code>immediate</code>, функция вызовется немедленно, но будет игнорировать вызовы в пределах таймаута.</p>
 
@@ -1834,16 +1876,154 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
                 func.apply(context, args);
             }
         };
+    };
+
+
+    <span class="hljs-comment">/**
+     * Set datastructure
+     * @constructor
+     */</span>
+    franky.Set = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">this</span>.items = [];
+    };
+
+    franky.Set.prototype = {
+        <span class="hljs-comment">/**
+         * Adds unique value
+         * @param value
+         */</span>
+        add: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value)</span> </span>{
+            <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.has(value)) {
+                <span class="hljs-keyword">this</span>.items.push(value);
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+        },
+        <span class="hljs-comment">/**
+         * Checks for existing value in Set
+         * @param value
+         * @returns {boolean}
+         */</span>
+        has: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value)</span> </span>{
+            <span class="hljs-keyword">return</span> x.indexOf(<span class="hljs-keyword">this</span>.items, value) !== -<span class="hljs-number">1</span>;
+        },
+        <span class="hljs-comment">/**
+         * Removes value from Set
+         * @param value
+         * @returns &lt;Item&gt;
+         */</span>
+        remove: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value)</span> </span>{
+            <span class="hljs-keyword">var</span> res;
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.has(value)) {
+                res = <span class="hljs-keyword">this</span>.items.splice(
+                    x.indexOf(<span class="hljs-keyword">this</span>.items, value),
+                    <span class="hljs-number">1</span>
+                );
+            }
+            <span class="hljs-keyword">return</span> res;
+        },
+        <span class="hljs-comment">/**
+         * Removes first value and returns it as value
+         */</span>
+        removeFirst: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">var</span> res;
+            <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.isEmpty()) {
+                res = <span class="hljs-keyword">this</span>.items.splice(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>);
+            }
+            <span class="hljs-keyword">return</span> res;
+        },
+
+        <span class="hljs-comment">/**
+         * Iterates through values and void callback
+         * @param callback
+         */</span>
+        iterate: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(callback)</span> </span>{
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, l = <span class="hljs-keyword">this</span>.items.length; i &lt; l; i++) {
+                callback(<span class="hljs-keyword">this</span>.items[i], i, <span class="hljs-keyword">this</span>.items);
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+        },
+
+        <span class="hljs-comment">/**
+         * Returns size of Set
+         * @returns {Integer}
+         */</span>
+        size: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.items.length;
+        },
+
+        <span class="hljs-comment">/**
+         * Checks Set for empty state
+         * @returns {boolean}
+         */</span>
+        isEmpty: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.items.length === <span class="hljs-number">0</span>;
+        }
     };</pre></div></div>
             
         </li>
         
         
-        <li id="section-72">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>Generates loops from range expression
+E.g. range of callbacks with values from 0 to 999</p>
+<blockquote>
+<p>var res = franky.range(‘…1000’, function (index) {
+    console.log(index);
+});
+It’s also possible to define from to range
+E.g. from 10 to 19
+var res = franky.range(‘10…20’, function (index) {
+    console.log(index);
+});</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    franky.range = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>exp, <span class="hljs-comment">/**Function*/</span>callback)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p>three possibilities “…Integer” || “Integer…Integer”</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> parts = exp.split(<span class="hljs-string">"..."</span>),
+            first = <span class="hljs-number">0</span>,
+            last = <span class="hljs-number">0</span>;
+
+        <span class="hljs-keyword">if</span> (parts[<span class="hljs-number">0</span>] &amp;&amp; !<span class="hljs-built_in">isNaN</span>(parts[<span class="hljs-number">0</span>])) {
+            first = parts[<span class="hljs-number">0</span>];
+        }
+
+        <span class="hljs-keyword">if</span> (parts[<span class="hljs-number">1</span>] &amp;&amp; !<span class="hljs-built_in">isNaN</span>(parts[<span class="hljs-number">1</span>])) {
+            last = parts[<span class="hljs-number">1</span>];
+        }
+
+        <span class="hljs-keyword">while</span> (first &lt; last) {
+            callback(first++);
+        }
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
               <p>Register as a named AMD module</p>
 
