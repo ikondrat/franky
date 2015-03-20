@@ -1,6 +1,5 @@
 define([
     './core',
-    './ds/Set.js',
     './checks/isArray',
     './checks/isArrayLike',
     './checks/isElement',
@@ -32,6 +31,7 @@ define([
     './etc/amd',
     './objects/bind',
     './etc/debounce',
+    './ds/Set.js',
     './global'
 ], function (franky) {
     return franky;
