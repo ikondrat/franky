@@ -38,7 +38,7 @@
  * For all details and documentation:
  * github.com/ikondrat/franky
  *
- * Date: 2015-03-20T16:17Z
+ * Date: 2015-03-20T16:19Z
  */</span>
 
 (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(global, factory)</span> </span>{
@@ -1969,37 +1969,18 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
-              <p>Generates loops from range expression
+              <p>Generates callbacks by range
 E.g. range of callbacks with values from 0 to 999</p>
 <blockquote>
 <p>var res = franky.range(‘…1000’, function (index) {
-    console.log(index);
-});
-It’s also possible to define from to range
-E.g. from 10 to 19
-var res = franky.range(‘10…20’, function (index) {
     console.log(index);
 });</p>
 </blockquote>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    franky.range = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>exp, <span class="hljs-comment">/**Function*/</span>callback)</span> </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-74">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
-              </div>
-              <p>three possibilities “…Integer” || “Integer…Integer”</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> parts = exp.split(<span class="hljs-string">"..."</span>),
+            <div class="content"><div class='highlight'><pre>    franky.range = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>exp, <span class="hljs-comment">/**Function*/</span>callback)</span> </span>{
+        <span class="hljs-keyword">var</span> parts = exp.split(<span class="hljs-string">"..."</span>),
             first = <span class="hljs-number">0</span>,
             last = <span class="hljs-number">0</span>;
 
@@ -2019,11 +2000,11 @@ var res = franky.range(‘10…20’, function (index) {
         </li>
         
         
-        <li id="section-75">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-75">&#182;</a>
+                <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
               <p>Register as a named AMD module</p>
 
