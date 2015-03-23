@@ -3,9 +3,11 @@ define([
 ], function (franky) {
     // Function test
     franky.isFunction = function () /**Boolean*/ {
-        return Array.prototype.every.call(
-            arguments,
-            function(x) { return x instanceof Function;}
-        );
+        for (var i = 0, l = arguments.length; i < l; i++) {
+            if (!(arguments[i] instanceof Function)) {
+                return false;
+            }
+        }
+        return true;
     };
 });

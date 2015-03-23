@@ -1,5 +1,6 @@
 define([
-    "./../core"
+    "./../core",
+    "./../checks/isString"
 ], function (franky) {
     // View Module
     // --------------------
@@ -13,13 +14,6 @@ define([
         this.templates = view && view.templates ?
             franky.beget(view.templates) :
         {};
-    };
-
-    franky.isString = function(){
-        return Array.prototype.every.call(
-            arguments,
-            function(x) { return typeof x === "string";}
-        );
     };
 
     franky.View.prototype = {
