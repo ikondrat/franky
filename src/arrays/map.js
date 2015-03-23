@@ -5,7 +5,15 @@ define([
     franky.map = function (/**Array*/arr, /**Function*/callback) /**Array*/ {
         var res = [];
         if (franky.isArray(arr) && callback instanceof Function) {
-            res = arr.map(callback);
+
+            if (x.isFunction(arr.map)) {
+                res = arr.map(callback);
+            } else {
+                for(var j = 0, l = arr.length; i < l; i++) {
+                    res[j] = callback(arr[j], j,  arr);
+                }
+            }
+
         }
         return res;
     };
