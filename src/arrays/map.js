@@ -9,7 +9,7 @@ define([
             if (x.isFunction(arr.map)) {
                 res = arr.map(callback);
             } else {
-                for(var j = 0, l = arr.length; i < l; i++) {
+                for(var j = 0, l = arr.length; j < l; j++) {
                     res[j] = callback(arr[j], j,  arr);
                 }
             }
