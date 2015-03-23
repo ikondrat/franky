@@ -42,7 +42,7 @@
     "LICENSE"
   ],
   "main": "franky.js",
-  "version": "1.0.19",
+  "version": "1.0.21",
   "devDependencies": {
     "docco": "0.6.x",
     "grunt": "0.4.5",
