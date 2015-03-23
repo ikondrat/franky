@@ -3,9 +3,11 @@ define([
 ], function (franky) {
     // Object test
     franky.isString = function(){
-        return Array.prototype.every.call(
-            arguments,
-            function(x) { return typeof x === "string";}
-        );
+        for (var i = 0, l = arguments.length; i < l; i++) {
+            if (typeof arguments[i] !== "string") {
+                return false;
+            }
+        }
+        return true;
     };
 });
