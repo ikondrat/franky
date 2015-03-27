@@ -33,6 +33,7 @@ define([
     './etc/debounce',
     './ds/Set',
     './etc/range',
+    './etc/query',
     './global'
 ], function (franky) {
     return franky;
