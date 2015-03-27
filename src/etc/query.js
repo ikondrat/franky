@@ -2,18 +2,18 @@
 define([
     "./../core"
 ], function( franky ) {
+    // http://jsperf.com/query-by-path
     // Fetches value from object by path
     // > var a = {x: {a: 1}}; x.query.bind(a)('x.1') -> 1
     var cache = {};
-    franky.query = function(/**String*/key, obj) {
-        obj = obj || this;
-        if (!cache[key]) {
-            cache[key] = new Function('obj', 'return obj.' + key);
+    franky.query = function(key, obj) {
+        var c = obj || this || {},
+            keys = key.split("."),
+            i = 0;
+
+        while (c[keys[i]]) {
+            c = c[keys[i++]];
         }
-        try {
-            return cache[key](obj);
-        } catch (e) {
-            return null;
-        }
+        return (i === keys.length) ? c : null;
     };
 });
