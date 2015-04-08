@@ -14,6 +14,12 @@ define([
         this.templates = view && view.templates ?
             franky.beget(view.templates) :
         {};
+
+        // deep copy the prototype property into the instance
+        this.re = {
+            parse: this.re.parse,
+            rule: this.re.rule
+        };
     };
 
     franky.View.prototype = {
@@ -60,6 +66,23 @@ define([
                 return function (d) {
                     return self.get(key, d);
                 };
+            },
+
+            bem: function(key){
+                key = key.split('.');
+                var func = key.pop(),
+                    name = key.pop(),
+                    propery = key.pop();
+                switch(func){
+                    case 'class':
+                        return function(data){
+                            return franky.bem.getClassname(name, (propery? data[propery]: data) || {});
+                        }
+                    case 'attrs':
+                        return function(data){
+                            return franky.bem.getAttributes(data[name||'attrs']);
+                        }
+                }
             }
         },
 
@@ -114,6 +137,9 @@ define([
             var self = this;
             var template = data && data.views ?
                 data.views.templates[name] : this.templates[name];
+            if(!template){
+                return '';
+            }
             return self.getContent(template, data);
         }
     };
@@ -126,7 +152,7 @@ define([
             i = 0;
 
         if (franky.isFunction(template)) {
-            result.push(template);
+            this.templates[name] = template;
         } else {
             template.replace(this.re.parse, function(matchedExpression, matchedKey, matchedIndex) {
                 result.push(
