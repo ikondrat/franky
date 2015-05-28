@@ -1,6 +1,7 @@
 define([
     './../core',
     '../arrays/forEach',
+    './camelCase',
     '../checks/isElement'
 ], function (franky) {
     // We may fetch all data-* values.
@@ -15,7 +16,7 @@ define([
             } else {
                 franky.forEach(element.attributes, function (item) {
                     if (item.name.indexOf("data-") === 0) {
-                        res[item.name.substr(5)] = item.value;
+                        res[x.camelCase(item.name.substr(5))] = item.value;
                     }
                 });
             }

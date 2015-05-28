@@ -1,6 +1,7 @@
 define([
     './../core',
     './console',
+    './decamelCase',
     './data'
 ], function (franky) {
     // Component Module
@@ -20,7 +21,7 @@ define([
             var self = this;
             this.element = element;
             franky.each(franky.dataset(element), function (value, key) {
-                self[key] = value;
+                self[x.decamelCase(key)] = value;
             });
         }
     };

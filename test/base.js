@@ -5,17 +5,17 @@ describe("Base", function () {
         var el = document.createElement('div'),
             testData = "";
 
-        el.setAttribute("data-var1", "hello");
-        el.setAttribute("data-var2", "world");
-        el.setAttribute("data-var3", "againt");
+        el.setAttribute("data-var-first", "hello");
+        el.setAttribute("data-var-second", "world");
+        el.setAttribute("data-var-third", "againt");
 
         var data = x.dataset(el);
         expect(
-            data.var1
+            data.varFirst
         ).toEqual("hello");
 
         expect(
-            data.var1 + " " + data.var2
+            data.varFirst + " " + data.varSecond
         ).toEqual("hello world");
 
         expect(
