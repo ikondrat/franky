@@ -57,7 +57,7 @@ define([
                         init: arguments[1]
                     });
                     // Dependencies injection form declaration
-                    // > franky.Component.extend('hello', ['$logger', function ($hello) {
+                    // > franky.Component.extend('hello', ['$logger', function ($logger) {
                     //      $logger.say('hello');
                     // }]);
                 } else if (franky.isString(componentDescription) && franky.isArray(arguments[1])) {
