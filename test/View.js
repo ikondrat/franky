@@ -179,4 +179,75 @@ describe("Views", function () {
         expect(views.en.get('t1')).toBe('views en');
         
     });
+    
+    it("not fails at an undefined template", function(){
+        var b = new x.View();
+
+        b.let('str', '[% who %] [% am %] [% i %][% ? %]');
+        
+        b.let('who', 'Кто');
+        b.let('?', '[% am %]');
+        
+        b.let('caller', function(data){
+            return data.views.get('str', data);
+        });
+
+        expect(b.get('str', {
+            i: 'я',
+            '?': '!'
+        })).toBe('Кто  я!');
+        
+
+        expect(b.get('caller', {
+            views: b,
+            i: 'я',
+            '?': '!'
+        })).toBe('Кто  я!');
+        
+        expect(b.get('ololo')).toBe('');
+    });
+    
+    it("understands 'bem:' rules", function(){
+        var b = new x.View();
+
+        b.let('cls', '[% bem:name.class %]');
+        b.let('cls2', '[% bem:prop.name.class %]');
+
+        b.let('attrs', '[% bem:attrs %]');
+        b.let('attrs2', '[% bem:prop.attrs %]');
+
+        expect(b.get('cls', {
+            mix: 'lol',
+            mods: {
+                a: 'b',
+                c: 0,
+                d: false
+            }
+        })).toBe('name lol name_a_b name_c_0');
+
+        expect(b.get('cls2', {
+            prop:{
+                mix: 'lol',
+                mods: {
+                    a: 'b'
+                }
+            }
+        })).toBe('name lol name_a_b');
+
+        expect(b.get('attrs', {
+            attrs: {
+                a: 5,
+                b: false,
+                c: 'x"x'
+            }
+        })).toBe(' a="5" c="x&quot;x"');
+
+        expect(b.get('attrs2', {
+            prop: {
+                a: 5,
+                b: true,
+                c: 'x"x'
+            }
+        })).toBe(' a="5" b="true" c="x&quot;x"');
+    });
 });

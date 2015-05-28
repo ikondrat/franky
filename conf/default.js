@@ -19,6 +19,7 @@ define([
     './etc/beget',
     './etc/getJPathValue',
     './etc/getObject',
+    './etc/bem',
     './etc/create',
     './etc/constructURL',
     './etc/components',
