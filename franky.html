@@ -31,14 +31,14 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*!
- * Franky JavaScript Library v1.0.26
+ * Franky JavaScript Library v1.0.27
  *
  * (c) 2013-2014 Kondrat Shmoylov
  * Franky may be freely distributed under the MIT license.
  * For all details and documentation:
  * github.com/ikondrat/franky
  *
- * Date: 2015-05-28T12:09Z
+ * Date: 2015-05-28T12:12Z
  */</span>
 
 (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(global, factory)</span> </span>{
@@ -65,7 +65,7 @@
             <div class="content"><div class='highlight'><pre>}(<span class="hljs-keyword">typeof</span> global !== <span class="hljs-string">"undefined"</span> ? global : <span class="hljs-keyword">this</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( global )</span> </span>{
     <span class="hljs-keyword">var</span> franky = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{};
     
-    franky.version = <span class="hljs-string">"1.0.26"</span>;
+    franky.version = <span class="hljs-string">"1.0.27"</span>;
     franky.isDebug = <span class="hljs-literal">false</span>;</pre></div></div>
             
         </li>
@@ -960,7 +960,7 @@ Fetches value from object by path</p>
 
 
 
-    <span class="hljs-keyword">var</span> camelCases = <span class="hljs-regexp">/([a-z]{1})([A-Z]{1})/g</span>;</pre></div></div>
+    <span class="hljs-keyword">var</span> dashedCases = <span class="hljs-regexp">/([a-z]{1})([A-Z]{1})/g</span>;</pre></div></div>
             
         </li>
         
@@ -979,7 +979,7 @@ Fetches value from object by path</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    franky.decamelCase = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>str)</span> /**<span class="hljs-title">String</span>*/ </span>{
-        <span class="hljs-keyword">return</span> str.replace(camelCases, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(all, letterFirst, letterSecond)</span> </span>{
+        <span class="hljs-keyword">return</span> str.replace(dashedCases, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(all, letterFirst, letterSecond)</span> </span>{
             <span class="hljs-keyword">return</span> letterFirst + <span class="hljs-string">"-"</span> + letterSecond.toLowerCase();
         });
     };
