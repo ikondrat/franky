@@ -31,14 +31,14 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*!
- * Franky JavaScript Library v1.0.16
+ * Franky JavaScript Library v1.0.26
  *
  * (c) 2013-2014 Kondrat Shmoylov
  * Franky may be freely distributed under the MIT license.
  * For all details and documentation:
  * github.com/ikondrat/franky
  *
- * Date: 2015-03-20T16:19Z
+ * Date: 2015-05-28T12:09Z
  */</span>
 
 (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(global, factory)</span> </span>{
@@ -65,7 +65,7 @@
             <div class="content"><div class='highlight'><pre>}(<span class="hljs-keyword">typeof</span> global !== <span class="hljs-string">"undefined"</span> ? global : <span class="hljs-keyword">this</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( global )</span> </span>{
     <span class="hljs-keyword">var</span> franky = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(smth)</span> </span>{};
     
-    franky.version = <span class="hljs-string">"1.0.16"</span>;
+    franky.version = <span class="hljs-string">"1.0.26"</span>;
     franky.isDebug = <span class="hljs-literal">false</span>;</pre></div></div>
             
         </li>
@@ -170,10 +170,12 @@ properties that all elements have. (works on IE7)</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    franky.isFunction = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> /**<span class="hljs-title">Boolean</span>*/ </span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.every.call(
-            <span class="hljs-built_in">arguments</span>,
-            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> x <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>;}
-        );
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, l = <span class="hljs-built_in">arguments</span>.length; i &lt; l; i++) {
+            <span class="hljs-keyword">if</span> (!(<span class="hljs-built_in">arguments</span>[i] <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>)) {
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+            }
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
     };</pre></div></div>
             
         </li>
@@ -207,10 +209,12 @@ properties that all elements have. (works on IE7)</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    franky.isString = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.every.call(
-            <span class="hljs-built_in">arguments</span>,
-            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> x === <span class="hljs-string">"string"</span>;}
-        );
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, l = <span class="hljs-built_in">arguments</span>.length; i &lt; l; i++) {
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">arguments</span>[i] !== <span class="hljs-string">"string"</span>) {
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+            }
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
     };</pre></div></div>
             
         </li>
@@ -512,7 +516,15 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
             <div class="content"><div class='highlight'><pre>    franky.map = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Array*/</span>arr, <span class="hljs-comment">/**Function*/</span>callback)</span> /**<span class="hljs-title">Array</span>*/ </span>{
         <span class="hljs-keyword">var</span> res = [];
         <span class="hljs-keyword">if</span> (franky.isArray(arr) &amp;&amp; callback <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>) {
-            res = arr.map(callback);
+
+            <span class="hljs-keyword">if</span> (x.isFunction(arr.map)) {
+                res = arr.map(callback);
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>, l = arr.length; j &lt; l; j++) {
+                    res[j] = callback(arr[j], j,  arr);
+                }
+            }
+
         }
         <span class="hljs-keyword">return</span> res;
     };
@@ -676,7 +688,7 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
             </div>
             
             <div class="content"><div class='highlight'><pre>    franky.getRandom = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Number=*/</span>count)</span> /**<span class="hljs-title">Number</span>*/ </span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">Math</span>.random() * (count || <span class="hljs-number">1000</span>));
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.random() * (count || <span class="hljs-number">1E3</span>));
     };
 
 
@@ -780,23 +792,15 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
-              <p>Gets value from object by path</p>
-<blockquote>
-<p>var a = {x: {a: 1}}; x.getJPathValue(a, ‘x.1’) -&gt; 1</p>
-</blockquote>
+              <p>Native bind is too slow.
+<a href="http://jsperf.com/nativebind-vs-custombind">See</a></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    franky.getJPathValue = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(<span class="hljs-comment">/**Object*/</span>smth, <span class="hljs-comment">/**String*/</span>key)</span> </span>{
-        <span class="hljs-keyword">var</span> c = smth,
-            keys = key.split(<span class="hljs-string">"."</span>),
-            i = <span class="hljs-number">0</span>;
-
-        <span class="hljs-keyword">while</span>(c[keys[i]]) {
-            c = c[keys[i++]];
-        }
-
-        <span class="hljs-keyword">return</span> c;
+            <div class="content"><div class='highlight'><pre>    franky.bind = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(func, context)</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">return</span> func.apply(context, <span class="hljs-built_in">arguments</span>);
+        };
     };</pre></div></div>
             
         </li>
@@ -808,6 +812,56 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
+              <p><a href="http://jsperf.com/query-by-path">http://jsperf.com/query-by-path</a>
+Fetches value from object by path</p>
+<blockquote>
+<p>var a = {x: {a: 1}}; x.query.bind(a)(‘x.1’) -&gt; 1</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> cache = {};
+    franky.query = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key, obj)</span> </span>{
+        <span class="hljs-keyword">var</span> c = obj || <span class="hljs-keyword">this</span> || {},
+            keys = key.split(<span class="hljs-string">"."</span>),
+            i = <span class="hljs-number">0</span>;
+
+        <span class="hljs-keyword">while</span> (c[keys[i]]) {
+            c = c[keys[i++]];
+        }
+        <span class="hljs-keyword">return</span> (i === keys.length) ? c : <span class="hljs-literal">null</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Gets value from object by path</p>
+<blockquote>
+<p>var a = {x: {a: 1}}; x.getJPathValue(a, ‘x.1’) -&gt; 1
+@deprecated</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    franky.getJPathValue = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(<span class="hljs-comment">/**Object*/</span>smth, <span class="hljs-comment">/**String*/</span>key)</span> </span>{
+        <span class="hljs-keyword">return</span> x.bind(franky.query, smth)(key);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
               <p>Creates object with <code>beget</code> property</p>
 
             </div>
@@ -817,6 +871,44 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
             <span class="hljs-keyword">return</span> franky.beget(<span class="hljs-keyword">this</span>, values);
         };
         <span class="hljs-keyword">return</span> franky.beget(obj);
+    };
+
+
+    franky.bem = {
+        getAttributes: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Object*/</span>data)</span> /**<span class="hljs-title">String</span>*/</span>{
+            <span class="hljs-keyword">if</span>(!data){
+                <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>;
+            }
+            <span class="hljs-keyword">var</span> attr, str = <span class="hljs-string">''</span>;
+            <span class="hljs-keyword">for</span>( attr <span class="hljs-keyword">in</span> data ){
+                <span class="hljs-keyword">if</span>( data.hasOwnProperty(attr) ){
+                    <span class="hljs-keyword">var</span> value = data[attr];
+                    <span class="hljs-keyword">if</span>(value || value === <span class="hljs-number">0</span>){
+                        value = value.toString().replace(<span class="hljs-regexp">/"/g</span>, <span class="hljs-string">'&amp;quot;'</span>);
+                        str += <span class="hljs-string">' '</span> + attr + <span class="hljs-string">'="'</span> + value + <span class="hljs-string">'"'</span>;
+                    }
+                }
+            }
+            <span class="hljs-keyword">return</span> str;
+        },
+        getClassname: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>prefix, <span class="hljs-comment">/**Object**/</span>data)</span> /**<span class="hljs-title">String</span>*/</span>{
+            <span class="hljs-keyword">var</span> mod,
+                mods = data.mods,
+                str = prefix;
+
+            <span class="hljs-keyword">if</span>(data.mix){
+                str += <span class="hljs-string">' '</span> + data.mix;
+            }
+
+            <span class="hljs-keyword">if</span>( mods ){
+                <span class="hljs-keyword">for</span>( mod <span class="hljs-keyword">in</span> mods ){
+                    <span class="hljs-keyword">if</span>( mods.hasOwnProperty(mod) &amp;&amp; (mods[mod] || mods[mod] === <span class="hljs-number">0</span>)){
+                        str += <span class="hljs-string">' '</span> + prefix + <span class="hljs-string">'_'</span> + mod + <span class="hljs-string">'_'</span> + mods[mod];
+                    }
+                }
+            }
+            <span class="hljs-keyword">return</span> str;
+        }
     };
 
 
@@ -868,6 +960,31 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
 
 
 
+    <span class="hljs-keyword">var</span> camelCases = <span class="hljs-regexp">/([a-z]{1})([A-Z]{1})/g</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>Converts camelSyntax syntax to dashedSyntax</p>
+<blockquote>
+<p>x.decamelCase(‘helloWorld’) -&gt; ‘hello-world’</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    franky.decamelCase = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>str)</span> /**<span class="hljs-title">String</span>*/ </span>{
+        <span class="hljs-keyword">return</span> str.replace(camelCases, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(all, letterFirst, letterSecond)</span> </span>{
+            <span class="hljs-keyword">return</span> letterFirst + <span class="hljs-string">"-"</span> + letterSecond.toLowerCase();
+        });
+    };
+
+
     franky.data = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(node, dataName)</span> </span>{
         <span class="hljs-keyword">if</span> (!franky.isElement(node)) {
             franky.error(<span class="hljs-string">"nodeElement expected as first argument instead of "</span> + <span class="hljs-keyword">typeof</span> node);
@@ -878,11 +995,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-34">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <h2 id="component-module">Component Module</h2>
 
@@ -891,11 +1008,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-35">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <p>Component’s base methods</p>
 
@@ -906,11 +1023,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-36">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>Gets data by key</p>
 
@@ -928,7 +1045,7 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
             <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
             <span class="hljs-keyword">this</span>.element = element;
             franky.each(franky.dataset(element), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value, key)</span> </span>{
-                self[key] = value;
+                self[x.decamelCase(key)] = value;
             });
         }
     };
@@ -944,11 +1061,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-37">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <p>Cornerstone of Component moodule - method for creating new components</p>
 
@@ -961,11 +1078,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-38">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>Old-school declaration</p>
 <blockquote>
@@ -985,11 +1102,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-39">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>Short form declaration</p>
 <blockquote>
@@ -1009,11 +1126,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-40">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>Dependencies injection form declaration</p>
 <blockquote>
@@ -1061,11 +1178,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-41">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <p>fill index</p>
 
@@ -1079,11 +1196,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-42">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <p>Declares service with name and function</p>
 <blockquote>
@@ -1107,11 +1224,11 @@ Searches index of item in <code>arr</code> with declared <code>value</code> and 
         </li>
         
         
-        <li id="section-43">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <p>We can init Component module by HTML.
 E.g. <code>&lt;div data-xapp=&#39;test&#39;&gt;&lt;/div&gt;</code>
@@ -1158,16 +1275,41 @@ Then franky.Component.initByHTML can be called and all assigned components are b
             }
         };
 
-    })();</pre></div></div>
+    })();
+
+
+    <span class="hljs-keyword">var</span> dashes = <span class="hljs-regexp">/-([\da-z])/gi</span>;</pre></div></div>
             
         </li>
         
         
-        <li id="section-44">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>Converts dashed syntax to <a href="https://developer.mozilla.org/ru/docs/Web/API/HTMLElement/dataset">camelCase</a></p>
+<blockquote>
+<p>x.camelCase(‘hello-world’) -&gt; ‘helloWorld’</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    franky.camelCase = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**String*/</span>str)</span> /**<span class="hljs-title">String</span>*/ </span>{
+        <span class="hljs-keyword">return</span> str.replace( dashes, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(all, letter)</span> </span>{
+            <span class="hljs-keyword">return</span> letter.toUpperCase();
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <p>We may fetch all data-* values.
 For docFragment as <code>&#39;&lt;div data-var1=&quot;hello&quot; data-var2=&quot;world&quot;&gt;&lt;/div&gt;&#39;</code></p>
@@ -1186,7 +1328,7 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
             } <span class="hljs-keyword">else</span> {
                 franky.forEach(element.attributes, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(item)</span> </span>{
                     <span class="hljs-keyword">if</span> (item.name.indexOf(<span class="hljs-string">"data-"</span>) === <span class="hljs-number">0</span>) {
-                        res[item.name.substr(<span class="hljs-number">5</span>)] = item.value;
+                        res[x.camelCase(item.name.substr(<span class="hljs-number">5</span>))] = item.value;
                     }
                 });
             }
@@ -1219,11 +1361,11 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>Extends function by another function</p>
 
@@ -1243,11 +1385,11 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
         </li>
         
         
-        <li id="section-46">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>Creates interface description</p>
 
@@ -1277,11 +1419,11 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <p>Checks implementation of interface of interfaces for particular object</p>
 
@@ -1315,11 +1457,11 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <h2 id="view-module">View Module</h2>
 
@@ -1328,11 +1470,11 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               
             </div>
@@ -1340,11 +1482,11 @@ x.datatset(docFragment).var2 -&gt; ‘world’</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-54">&#182;</a>
               </div>
               <p>base constructor for view</p>
 <blockquote>
@@ -1359,14 +1501,25 @@ var uberView = franky.View(myViews)</p>
             <div class="content"><div class='highlight'><pre>    franky.View = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(<span class="hljs-comment">/**Object*/</span>view)</span> </span>{
         <span class="hljs-keyword">this</span>.templates = view &amp;&amp; view.templates ?
             franky.beget(view.templates) :
-        {};
-    };
+        {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>deep copy the prototype property into the instance</p>
 
-    franky.isString = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.every.call(
-            <span class="hljs-built_in">arguments</span>,
-            <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> x === <span class="hljs-string">"string"</span>;}
-        );
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>.re = {
+            parse: <span class="hljs-keyword">this</span>.re.parse,
+            rule: <span class="hljs-keyword">this</span>.re.rule
+        };
     };
 
     franky.View.prototype = {
@@ -1413,6 +1566,23 @@ var uberView = franky.View(myViews)</p>
                 <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(d)</span> </span>{
                     <span class="hljs-keyword">return</span> self.get(key, d);
                 };
+            },
+
+            bem: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key)</span></span>{
+                key = key.split(<span class="hljs-string">'.'</span>);
+                <span class="hljs-keyword">var</span> func = key.pop(),
+                    name = key.pop(),
+                    propery = key.pop();
+                <span class="hljs-keyword">switch</span>(func){
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'class'</span>:
+                        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{
+                            <span class="hljs-keyword">return</span> franky.bem.getClassname(name, (propery? data[propery]: data) || {});
+                        }
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'attrs'</span>:
+                        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{
+                            <span class="hljs-keyword">return</span> franky.bem.getAttributes(data[name||<span class="hljs-string">'attrs'</span>]);
+                        }
+                }
             }
         },
 
@@ -1423,11 +1593,11 @@ var uberView = franky.View(myViews)</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-56">&#182;</a>
               </div>
               <p>Get value from <code>data</code> or from described <code>views</code></p>
 
@@ -1439,11 +1609,11 @@ var uberView = franky.View(myViews)</p>
         </li>
         
         
-        <li id="section-52">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
               <p>If result is still empty try to reach other resources</p>
 
@@ -1454,11 +1624,11 @@ var uberView = franky.View(myViews)</p>
         </li>
         
         
-        <li id="section-53">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-53">&#182;</a>
+                <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
               <p>first - try to walk through superTemplates</p>
 
@@ -1470,11 +1640,11 @@ var uberView = franky.View(myViews)</p>
         </li>
         
         
-        <li id="section-54">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
               <p>or get values from described defaults in template declaration</p>
 
@@ -1494,11 +1664,11 @@ var uberView = franky.View(myViews)</p>
         </li>
         
         
-        <li id="section-55">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
               <p>Returns processed string</p>
 
@@ -1510,11 +1680,11 @@ var uberView = franky.View(myViews)</p>
         </li>
         
         
-        <li id="section-56">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <p>there are thre possible declarations array of functions, string and function
 array case</p>
@@ -1531,11 +1701,11 @@ array case</p>
         </li>
         
         
-        <li id="section-57">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-57">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <p>function case</p>
 
@@ -1547,11 +1717,11 @@ array case</p>
         </li>
         
         
-        <li id="section-58">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-58">&#182;</a>
+                <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
               <p>default string case</p>
 
@@ -1567,11 +1737,11 @@ array case</p>
         </li>
         
         
-        <li id="section-59">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-59">&#182;</a>
+                <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
               <p>Gets transformed value by defined template and data</p>
 
@@ -1581,6 +1751,9 @@ array case</p>
             <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
             <span class="hljs-keyword">var</span> template = data &amp;&amp; data.views ?
                 data.views.templates[name] : <span class="hljs-keyword">this</span>.templates[name];
+            <span class="hljs-keyword">if</span>(!template){
+                <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>;
+            }
             <span class="hljs-keyword">return</span> self.getContent(template, data);
         }
     };</pre></div></div>
@@ -1588,11 +1761,11 @@ array case</p>
         </li>
         
         
-        <li id="section-60">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-60">&#182;</a>
+                <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
               <p>Declares template with name</p>
 
@@ -1605,7 +1778,7 @@ array case</p>
             i = <span class="hljs-number">0</span>;
 
         <span class="hljs-keyword">if</span> (franky.isFunction(template)) {
-            result.push(template);
+            <span class="hljs-keyword">this</span>.templates[name] = template;
         } <span class="hljs-keyword">else</span> {
             template.replace(<span class="hljs-keyword">this</span>.re.parse, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(matchedExpression, matchedKey, matchedIndex)</span> </span>{
                 result.push(
@@ -1626,11 +1799,11 @@ array case</p>
         </li>
         
         
-        <li id="section-61">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-61">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <p>We have default instanced view for manipulations</p>
 <blockquote>
@@ -1667,11 +1840,11 @@ franky.views.get(‘say’, {someone: “john”}) -&gt; ‘hello john’</p>
         </li>
         
         
-        <li id="section-62">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-62">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
               <p>Converts object-like structures to array</p>
 
@@ -1684,11 +1857,11 @@ franky.views.get(‘say’, {someone: “john”}) -&gt; ‘hello john’</p>
         </li>
         
         
-        <li id="section-63">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-63">&#182;</a>
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <p>микромодуль для модульного написания кода</p>
 
@@ -1701,11 +1874,11 @@ franky.views.get(‘say’, {someone: “john”}) -&gt; ‘hello john’</p>
         </li>
         
         
-        <li id="section-64">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-64">&#182;</a>
+                <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
               <p>определяем модуль, по дефолту считаем что будем кешировать порожденную фабрику и по сути делать синглтон
 e.g. franky.amd.define(‘myCarFactory’, function () { return {serial: 123}; })</p>
@@ -1724,11 +1897,11 @@ e.g. franky.amd.define(‘myCarFactory’, function () { return {serial: 123}; }
         </li>
         
         
-        <li id="section-65">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-65">&#182;</a>
+                <a class="pilcrow" href="#section-70">&#182;</a>
               </div>
               <p>Обрабатывает зависимости и выполняет callback функцию в случае удовлетворения всех зависимостей
 e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
@@ -1740,11 +1913,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-66">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-66">&#182;</a>
+                <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
               <p>все аргументы, кроме последнего считаются необходимыми зависимостями</p>
 
@@ -1755,11 +1928,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-67">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-67">&#182;</a>
+                <a class="pilcrow" href="#section-72">&#182;</a>
               </div>
               <p>последний аргумент - функция в которую уйдут удовлетворенные зависимости</p>
 
@@ -1770,11 +1943,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-68">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-68">&#182;</a>
+                <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
               <p>обработка зависимостей</p>
 
@@ -1788,11 +1961,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-69">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-69">&#182;</a>
+                <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
               <p>если модуль представляет из себя синглтон - кешируем его</p>
 
@@ -1809,11 +1982,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-70">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-70">&#182;</a>
+                <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
               <p>пробрасываем удовлетворенные зависимости</p>
 
@@ -1828,31 +2001,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-71">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-71">&#182;</a>
-              </div>
-              <p>Native bind is too slow.
-<a href="http://jsperf.com/nativebind-vs-custombind">See</a></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    franky.bind = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(func, context)</span> </span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-            <span class="hljs-keyword">return</span> func.apply(context, <span class="hljs-built_in">arguments</span>);
-        };
-    };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-72">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-76">&#182;</a>
               </div>
               <p>Возвращает “обесшумленную функцию”. Функция будет вызвана после последнего вызова через объявленный таймаут.
 Если задан флаг <code>immediate</code>, функция вызовется немедленно, но будет игнорировать вызовы в пределах таймаута.</p>
@@ -1963,11 +2116,11 @@ e.g. franky.amd.require(‘myCarFactory’, function (carObject) {} );</p>
         </li>
         
         
-        <li id="section-73">
+        <li id="section-77">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-73">&#182;</a>
+                <a class="pilcrow" href="#section-77">&#182;</a>
               </div>
               <p>Generates callbacks by range
 E.g. range of callbacks with values from 0 to 999</p>
@@ -2000,11 +2153,11 @@ E.g. range of callbacks with values from 0 to 999</p>
         </li>
         
         
-        <li id="section-74">
+        <li id="section-78">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
+                <a class="pilcrow" href="#section-78">&#182;</a>
               </div>
               <p>Register as a named AMD module</p>
 
